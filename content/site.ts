@@ -4,6 +4,11 @@
  * Edit copy in this file and it updates everywhere. Nothing else needs to be
  * touched for a text change. Structural keys (ids, hrefs) are used by the
  * navigation and the scroll engine, so rename those with care.
+ *
+ * Chapter marks (`01 —` and so on) replace the category labels this page used
+ * to carry. "Philosophy", "What we build", "Our process" and "Contact" told a
+ * visitor nothing they could not already see, and made the page read as a
+ * stack of standard sections rather than one story.
  */
 
 export const site = {
@@ -28,11 +33,12 @@ export const site = {
     ],
   },
 
+  /** Kept plain and scannable: the nav is wayfinding, not narrative. */
   nav: [
-    { label: 'Philosophy', href: '#philosophy' },
-    { label: 'What we build', href: '#build' },
-    { label: 'Process', href: '#process' },
-    { label: 'About', href: '#about' },
+    { label: 'Our thinking', href: '#philosophy' },
+    { label: 'What we build', href: '#depth' },
+    { label: 'How we work', href: '#process' },
+    { label: 'The two of us', href: '#about' },
   ],
 
   hero: {
@@ -46,7 +52,8 @@ export const site = {
   },
 
   philosophy: {
-    eyebrow: 'Philosophy',
+    mark: '01',
+    marker: 'Translation',
     /** Revealed word by word as the section passes through the viewport. */
     statement:
       'A website should feel like the business behind it — the way it talks, the way it thinks, the way it treats people.',
@@ -56,38 +63,53 @@ export const site = {
     ],
   },
 
-  build: {
-    eyebrow: 'What we build',
-    lead: 'Three things, done properly.',
-    items: [
+  /**
+   * One chapter, three depths. This used to be two separate sections — a list
+   * of the three things we build, then a second list of interface / data /
+   * systems — which told the same three-layer story twice, thousands of pixels
+   * apart. They are now the same move: the page travels inward through the
+   * layers, and each layer is one of the things we make.
+   */
+  depth: {
+    mark: '02',
+    marker: 'Surface & system',
+    lead: 'The interface is only half the story.',
+    sub: 'Three layers. We build all of them, so none of them quietly becomes your problem.',
+    layers: [
       {
         id: 'frontend',
-        kicker: 'Custom frontend',
+        depth: 'Interface',
         title: 'Built by hand, not assembled.',
-        body: 'Every layout, state and transition written for your site specifically. It loads fast, it holds up on an old phone, and it works for someone using a keyboard.',
-        /** Short spec lines rendered as an art-directed interface fragment. */
+        body: 'What people touch: type, spacing, motion, state. Every layout and transition written for your site specifically. It loads fast, it holds up on an old phone, and it works for someone using a keyboard.',
         detail: ['type scale', 'spacing system', 'focus states', 'motion timing'],
       },
       {
         id: 'backend',
-        kicker: 'Backend',
+        depth: 'Data',
         title: 'Quiet systems that hold.',
-        body: 'Forms that actually deliver. Content you can change without calling us. Data that ends up where it should. The part nobody notices until it breaks, so we make sure it does not.',
+        body: 'What the interface is made of, shaped and validated before it ever reaches a screen. Forms that actually deliver. Content you can change without calling us. Data that ends up where it should.',
         detail: ['routes', 'validation', 'delivery', 'rate limits'],
       },
       {
         id: 'apps',
-        kicker: 'Apps, dashboards, integrations',
+        depth: 'Systems',
         title: 'When a site has to do more than speak.',
-        body: 'Bookings, accounts, internal tools, an admin view that makes sense to the person actually using it, and connections to the software you already run on.',
+        body: 'What keeps it upright. Bookings, accounts, internal tools, an admin view that makes sense to the person using it, and connections to the software you already run on.',
         detail: ['auth', 'dashboards', 'admin views', 'integrations'],
       },
     ],
+    /**
+     * The fragments rendered alongside these layers describe this site's own
+     * contact endpoint, so nothing here is invented. Keep them true if the
+     * endpoint changes.
+     */
+    note: 'Those three panels are this page. That schema is the form at the bottom of it.',
   },
 
   process: {
-    eyebrow: 'How we work',
-    lead: 'Four moves. Always in this order.',
+    mark: '03',
+    marker: 'Four moves',
+    lead: 'Good work starts before the first pixel.',
     stages: [
       {
         name: 'Understand',
@@ -108,33 +130,9 @@ export const site = {
     ],
   },
 
-  surface: {
-    eyebrow: 'Under the surface',
-    title: 'What you see is the last layer.',
-    body: 'Underneath the interface, data has to arrive on time and systems have to stay standing. We build all three, so none of them quietly becomes your problem.',
-    layers: [
-      {
-        name: 'Interface',
-        body: 'What people touch. Type, spacing, motion, state.',
-      },
-      {
-        name: 'Data',
-        body: 'What the interface is made of. Shaped, validated, predictable.',
-      },
-      {
-        name: 'Systems',
-        body: 'What keeps it upright. Routes, delivery, uptime, limits.',
-      },
-    ],
-    /**
-     * The fragments below describe this site's own contact endpoint, so nothing
-     * here is invented. Keep them true if the endpoint changes.
-     */
-    note: 'That is the form at the bottom of this page, all the way down.',
-  },
-
   about: {
-    eyebrow: 'Who is behind it',
+    mark: '04',
+    marker: 'The two of us',
     title: 'Two people who kept coming back to this.',
     story: [
       'Tanishk and Shreyas have been friends for about six years, and have wanted to build something together for most of them. There were other attempts — a fashion label among them — that never quite found their footing.',
@@ -157,7 +155,8 @@ export const site = {
   },
 
   contact: {
-    eyebrow: 'Contact',
+    mark: '05',
+    marker: 'Start here',
     title: ['Let’s make something', 'unmistakably yours'],
     body: 'Tell us what you are building and what is in the way. We will come back with honest thoughts on scope, timing, and whether we are the right studio for it.',
     form: {

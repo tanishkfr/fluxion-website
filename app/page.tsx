@@ -10,6 +10,21 @@ function vars(values: Record<string, string | number>): CSSProperties {
   return values as CSSProperties
 }
 
+/**
+ * The chapter mark. This replaces the category eyebrow ("Philosophy", "What we
+ * build", "Contact") the page used to carry: it still tells you where you are,
+ * without labelling the chapter as a standard website section.
+ */
+function Mark({ n, label }: { n: string; label: string }) {
+  return (
+    <p className="mark">
+      <span className="mark__n">{n}</span>
+      <span className="mark__rule" aria-hidden="true" />
+      <span className="mark__label">{label}</span>
+    </p>
+  )
+}
+
 /** Splits a sentence so each word can be lit as the scroll passes through it. */
 function Sweep({ text, id }: { text: string; id?: string }) {
   const words = text.split(' ')
@@ -48,8 +63,9 @@ function Brandmark({ className = '' }: { className?: string }) {
 }
 
 /**
- * The three fragments under the surface. They describe this page's own contact
- * endpoint rather than an imagined product.
+ * The three fragments, one per depth. They describe this page's own contact
+ * endpoint rather than an imagined product: an interface, the shape of the
+ * data behind it, and the route that carries it.
  */
 const FRAGMENTS: ReactNode[] = [
   <div className="frag frag--ui" key="ui" aria-hidden="true">
@@ -86,6 +102,7 @@ const FRAGMENTS: ReactNode[] = [
 ]
 
 export default function Home() {
+  const layers = site.depth.layers
   const stages = site.process.stages
   const year = new Date().getFullYear()
 
@@ -99,7 +116,7 @@ export default function Home() {
               <p className="eyebrow hero__eyebrow">{site.hero.eyebrow}</p>
               <h1 className="hero__title">
                 {site.hero.headline.map((line, i) => (
-                  <span className="hero__line" key={line} style={vars({ '--d': `${0.14 + i * 0.1}s` })}>
+                  <span className="hero__line" key={line} style={vars({ '--d': `${0.1 + i * 0.08}s` })}>
                     <span className="hero__line-in">
                       {line}
                       {/* Keeps the lines from running together in the accessible name. */}
@@ -131,7 +148,7 @@ export default function Home() {
           </div>
         </Track>
 
-        {/* ── Philosophy ─────────────────────────────────────────────────── */}
+        {/* ── 01 Translation ─────────────────────────────────────────────── */}
         <Track
           as="section"
           id="philosophy"
@@ -142,59 +159,83 @@ export default function Home() {
           labelledBy="philosophy-h"
         >
           <Track as="div" className="philosophy__lead" kind="sweep">
-            <p className="eyebrow">{site.philosophy.eyebrow}</p>
+            <Mark n={site.philosophy.mark} label={site.philosophy.marker} />
             <Sweep text={site.philosophy.statement} id="philosophy-h" />
           </Track>
           <div className="philosophy__body">
             {site.philosophy.body.map((paragraph, i) => (
-              <p key={i} data-reveal style={vars({ '--d': `${i * 0.12}s` })}>
+              <p key={i} data-reveal style={vars({ '--d': `${i * 0.1}s` })}>
                 {paragraph}
               </p>
             ))}
           </div>
         </Track>
 
-        {/* ── What we build ──────────────────────────────────────────────── */}
+        {/* ── 02 Surface & system ────────────────────────────────────────── */}
         <Track
           as="section"
-          id="build"
-          className="build"
-          scene="build"
+          id="depth"
+          className="depth"
+          scene="depth"
           tone="dark"
           kind="pin"
-          labelledBy="build-h"
+          labelledBy="depth-h"
         >
-          <div className="build__stage">
-            <header className="build__head">
-              <p className="eyebrow">{site.build.eyebrow}</p>
-              <h2 id="build-h" className="build__lead">
-                {site.build.lead}
+          <div className="depth__stage">
+            <header className="depth__head">
+              <Mark n={site.depth.mark} label={site.depth.marker} />
+              <h2 id="depth-h" className="depth__lead">
+                {site.depth.lead}
               </h2>
+              <p className="depth__sub">{site.depth.sub}</p>
             </header>
-            <div className="build__rail">
-              <ol className="build__track">
-                {site.build.items.map((item, i) => (
-                  <li className="reg" key={item.id} style={vars({ '--i': i })}>
-                    <span className="reg__rule" aria-hidden="true" />
-                    <p className="reg__kicker">{item.kicker}</p>
-                    <h3 className="reg__title">{item.title}</h3>
-                    <p className="reg__body">{item.body}</p>
-                    <ul className="reg__detail">
-                      {item.detail.map((detail) => (
-                        <li key={detail}>{detail}</li>
-                      ))}
-                    </ul>
+
+            {/*
+              One composition travelling inward. Each plane holds one depth;
+              the plane you are leaving scales up and dissolves as you pass
+              through it, and the next arrives from behind at a smaller scale.
+              Everything is transform and opacity, so it stays on the
+              compositor.
+            */}
+            <div className="depth__field">
+              <ol className="planes">
+                {layers.map((layer, i) => (
+                  <li className="plane" key={layer.id} style={vars({ '--i': i })}>
+                    <div className="plane__meta">
+                      <p className="plane__depth">
+                        <span className="plane__depth-n">{`0${i + 1}`}</span>
+                        {layer.depth}
+                      </p>
+                      <h3 className="plane__title">{layer.title}</h3>
+                      <p className="plane__body">{layer.body}</p>
+                      <ul className="plane__detail">
+                        {layer.detail.map((detail) => (
+                          <li key={detail}>{detail}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="plane__frag">{FRAGMENTS[i]}</div>
                   </li>
                 ))}
               </ol>
             </div>
-            <div className="build__meter" aria-hidden="true">
-              <span />
-            </div>
+
+            <ol className="depth__meter" aria-hidden="true">
+              {layers.map((layer, i) => (
+                <li key={layer.id} style={vars({ '--i': i })}>
+                  <span className="depth__seg">
+                    <span className="depth__fill" />
+                  </span>
+                  <span className="depth__label">{layer.depth}</span>
+                </li>
+              ))}
+            </ol>
           </div>
         </Track>
 
-        {/* ── Process ────────────────────────────────────────────────────── */}
+        <p className="depth__note">{site.depth.note}</p>
+
+        {/* ── 03 Four moves ──────────────────────────────────────────────── */}
         <Track
           as="section"
           id="process"
@@ -206,7 +247,7 @@ export default function Home() {
         >
           <div className="process__stage">
             <header className="process__head">
-              <p className="eyebrow">{site.process.eyebrow}</p>
+              <Mark n={site.process.mark} label={site.process.marker} />
               <h2 id="process-h" className="process__lead">
                 {site.process.lead}
               </h2>
@@ -236,48 +277,7 @@ export default function Home() {
           </div>
         </Track>
 
-        {/* ── Under the surface ──────────────────────────────────────────── */}
-        <Track
-          as="section"
-          id="surface"
-          className="surface"
-          scene="surface"
-          tone="dark"
-          kind="through"
-          labelledBy="surface-h"
-        >
-          <header className="surface__head">
-            <p className="eyebrow">{site.surface.eyebrow}</p>
-            <h2 id="surface-h" className="surface__title" data-reveal>
-              {site.surface.title}
-            </h2>
-            <p className="surface__body" data-reveal style={vars({ '--d': '0.1s' })}>
-              {site.surface.body}
-            </p>
-          </header>
-
-          <Track as="div" className="surface__stack" kind="sweep">
-            <span className="surface__trace" aria-hidden="true">
-              <span className="surface__trace-fill" />
-              <span className="surface__trace-dot" />
-            </span>
-            <ol className="layers">
-              {site.surface.layers.map((layer, i) => (
-                <li className="layer" key={layer.name} style={vars({ '--i': i })}>
-                  <div className="layer__meta">
-                    <h3 className="layer__name">{layer.name}</h3>
-                    <p className="layer__body">{layer.body}</p>
-                  </div>
-                  <div className="layer__frag">{FRAGMENTS[i]}</div>
-                </li>
-              ))}
-            </ol>
-          </Track>
-
-          <p className="surface__note">{site.surface.note}</p>
-        </Track>
-
-        {/* ── About ──────────────────────────────────────────────────────── */}
+        {/* ── 04 The two of us ───────────────────────────────────────────── */}
         <Track
           as="section"
           id="about"
@@ -288,7 +288,7 @@ export default function Home() {
           labelledBy="about-h"
         >
           <div className="about__head">
-            <p className="eyebrow">{site.about.eyebrow}</p>
+            <Mark n={site.about.mark} label={site.about.marker} />
             <h2 id="about-h" className="about__title" data-reveal>
               {site.about.title}
             </h2>
@@ -315,7 +315,7 @@ export default function Home() {
           </ul>
         </Track>
 
-        {/* ── Contact ────────────────────────────────────────────────────── */}
+        {/* ── 05 Start here ──────────────────────────────────────────────── */}
         <Track
           as="section"
           id="contact"
@@ -326,7 +326,7 @@ export default function Home() {
           labelledBy="contact-h"
         >
           <div className="contact__intro">
-            <p className="eyebrow">{site.contact.eyebrow}</p>
+            <Mark n={site.contact.mark} label={site.contact.marker} />
             <h2 id="contact-h" className="contact__title" data-reveal>
               {site.contact.title.map((line, i) => (
                 <span className="contact__line" key={line}>

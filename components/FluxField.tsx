@@ -9,9 +9,10 @@ import { onFrame, type FluxState, type SceneName } from '@/lib/flux'
  *
  * One fixed canvas behind the whole page, drawing three strands whose shape is
  * driven by which chapter of the story you are in. It drifts in the hero,
- * settles for the philosophy, splits into three for what we build, morphs
- * through scatter → curve → grid → point across the process, carries a pulse
- * under the surface, and resolves into the signal dot at the end.
+ * settles into a horizon for the philosophy, splits into three and carries a
+ * request along itself as the page travels down through the layers, morphs
+ * through scatter → curve → grid → point across the process, and resolves into
+ * the signal dot at the end.
  *
  * Parameters are eased toward their target every frame rather than snapped, so
  * chapter changes read as one continuous movement.
@@ -72,9 +73,13 @@ const SCENES: Record<SceneName, Keyframe[]> = {
     [0, { y: 0.86, amp: 0.045, freq: 0.65, noise: 0.05, spread: 0.16, alpha: 0.45, pointer: 0.3 }],
     [1, { y: 0.88, amp: 0.03, freq: 0.5, noise: 0.03, spread: 0.1, alpha: 0.4, pointer: 0.2 }],
   ],
-  build: [
-    [0, { y: 0.5, amp: 0.075, freq: 0.75, noise: 0.04, spread: 0.85, alpha: 0.7, pointer: 0.35 }],
-    [1, { y: 0.5, amp: 0.08, freq: 0.8, noise: 0.04, spread: 1, alpha: 0.7, pointer: 0.35 }],
+  // Travelling inward: the three strands open out as the surface layer passes,
+  // then draw back together as the page arrives at the systems underneath. A
+  // request runs along the core strand the whole way down.
+  depth: [
+    [0, { y: 0.5, amp: 0.07, freq: 0.7, noise: 0.04, spread: 0.5, alpha: 0.55, pulse: 0.8, pointer: 0.3 }],
+    [0.5, { y: 0.5, amp: 0.085, freq: 0.75, noise: 0.035, spread: 1, alpha: 0.7, pulse: 1, pointer: 0.25 }],
+    [1, { y: 0.5, amp: 0.05, freq: 0.6, noise: 0.02, spread: 0.34, alpha: 0.6, pulse: 1, pointer: 0.2 }],
   ],
   // The four moves: scatter, curve, grid, point.
   process: [
@@ -82,10 +87,6 @@ const SCENES: Record<SceneName, Keyframe[]> = {
     [0.34, { y: 0.5, amp: 0.13, freq: 0.85, noise: 0.05, spread: 0.34, alpha: 0.85, pointer: 0.3 }],
     [0.68, { y: 0.5, amp: 0.11, freq: 0.8, noise: 0.02, spread: 0.3, grid: 1, alpha: 0.85 }],
     [1, { y: 0.5, amp: 0.04, freq: 0.8, noise: 0, spread: 0.08, grid: 0.5, converge: 1, dot: 0.03, alpha: 1 }],
-  ],
-  surface: [
-    [0, { y: 0.5, amp: 0.03, freq: 0.45, noise: 0.02, spread: 0.5, alpha: 0.45, pulse: 1 }],
-    [1, { y: 0.5, amp: 0.03, freq: 0.45, noise: 0.02, spread: 0.6, alpha: 0.45, pulse: 1 }],
   ],
   about: [
     [0, { y: 0.5, amp: 0.028, freq: 0.4, noise: 0.02, spread: 0.2, alpha: 0.3, pointer: 0.2 }],
