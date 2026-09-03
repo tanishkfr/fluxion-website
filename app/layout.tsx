@@ -83,8 +83,11 @@ const organisation = {
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  // `data-tone` drives the ground, `data-ink` the type. The engine moves the
+  // second a beat after the first, so the ink never crossfades through the
+  // ground's own colour. Both start dark, as the hero does.
   return (
-    <html lang="en" data-tone="dark" className={inter.variable}>
+    <html lang="en" data-tone="dark" data-ink="dark" className={inter.variable}>
       <head>
         <link
           rel="preload"
@@ -105,20 +108,20 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <noscript>
           <style>{`
             [data-reveal]{opacity:1!important;transform:none!important}
-            .hero,.build,.process{height:auto!important}
-            .hero__stage,.build__stage,.process__stage{position:static!important;height:auto!important;padding-block:var(--bay)}
+            .hero,.depth,.process{height:auto!important}
+            .hero__stage,.depth__stage,.process__stage{position:static!important;height:auto!important;padding-block:var(--bay)}
             .hero__inner{transform:none!important;opacity:1!important}
             .hero__cue{display:none}
-            .build__rail{overflow:visible}
-            .build__track{flex-direction:column;gap:clamp(36px,6vh,72px);transform:none!important}
-            .reg{flex:1 1 auto}
-            .build__meter,.process__meter,.surface__trace{display:none}
+            .depth__field{overflow:visible}
+            .planes{gap:clamp(40px,7vh,88px)}
+            .plane{grid-area:auto!important;opacity:1!important;transform:none!important;align-items:start}
+            .plane__frag{transform:none!important}
+            .depth__meter,.process__meter{display:none}
             .process__stages{gap:clamp(36px,6vh,72px)}
             .stage{grid-area:auto!important;opacity:1!important;transform:none!important}
             .stage__name{font-size:clamp(2rem,5vw,4rem)}
             .sweep__w{opacity:1!important}
-            .layers,.surface__note{padding-left:0}
-            .layer__frag{opacity:1!important;transform:none!important}
+            .nav__toggle{display:none!important}
           `}</style>
         </noscript>
       </head>

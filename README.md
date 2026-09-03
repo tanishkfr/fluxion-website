@@ -1,6 +1,6 @@
 # Fluxion Studios
 
-The launch site. One page, one continuous scroll, seven chapters.
+The launch site. One page, one continuous scroll, six chapters.
 
 ---
 
@@ -8,25 +8,43 @@ The launch site. One page, one continuous scroll, seven chapters.
 
 **One line carries the whole story.** A single red signal line — the dot from
 the wordmark, stretched out — runs behind the entire page on one fixed canvas.
-It drifts in the hero, settles into a low horizon for the philosophy, splits
-into three strands for the three things we build, then morphs through the four
-moves of the process: **scattered → curve → grid → a single point.** That point
-is the signal dot. Everything converges on it.
+It drifts in the hero, settles into a low horizon for the philosophy, opens
+into three strands and carries a request along itself as the page travels down
+through the layers, then morphs through the four moves of the process:
+**scattered → curve → grid → a single point.** That point is the signal dot.
+Everything converges on it.
 
 **One surface, not a stack of sections.** The page never changes background per
 block. The whole ground crossfades between Just Black and Cornsilk as the story
 moves between the machine and the people — black for the work, cornsilk for the
-thinking and the two of us. One `data-tone` attribute on `<html>` drives ink,
-rules, fields and the line's own colour together, over 750ms.
+thinking and the two of us. `data-tone` on `<html>` moves the ground over
+420ms; `data-ink` follows 210ms behind it and swaps the type in a single frame.
+They are deliberately not simultaneous — crossfade both over the same curve and
+you put identical mid-greys on top of each other halfway through, and the text
+disappears completely for about a fifth of a second.
 
-**Two protected cinematic moments:** the hero handing off (headline scales and
-dissolves as the ground turns), and the process morph (pinned, four stages, the
-line becoming a dot). Everything else stays restrained so those two land.
+**Three protected cinematic moments:** the hero handing off (the headline
+scales and dissolves while the next chapter's statement rises through it — the
+philosophy is pulled up under the hero with a negative margin, so the two
+overlap rather than one ending and another starting); the depth dolly (pinned,
+three layers, the camera travelling through each one into the next); and the
+process morph (pinned, four moves, the line becoming a dot). Everything else
+stays restrained so those three land.
 
-**Under the surface documents itself.** The interface / data / systems fragments
-describe *this page's own contact endpoint* — the real schema, the real rate
-limit, the real reply-to behaviour. Nothing is invented, and there is no
-fabricated client work anywhere on the site.
+Every pinned beat is enter → **hold** → exit, never one continuous ramp. Nothing
+is ever asked to be read while it is moving.
+
+**The page documents itself.** The interface / data / systems fragments describe
+*this page's own contact endpoint* — the real schema, the real rate limit, the
+real reply-to behaviour. Nothing is invented, and there is no fabricated client
+work anywhere on the site.
+
+**No category labels.** Chapters carry a mark — `01 — Translation`,
+`02 — Surface & system`, `03 — Four moves` — rather than "Philosophy",
+"What we build", "Our process", "Contact". The mark still says where you are; it
+just does not spend its words naming the chapter as a standard website section.
+The nav stays plain, because navigation is wayfinding rather than narrative, and
+it underlines whichever chapter currently owns the screen.
 
 ---
 
@@ -37,13 +55,21 @@ dependencies** — no Tailwind, no GSAP, no Framer Motion, no email SDK.
 
 - Motion is one `requestAnimationFrame` loop (`lib/flux.ts`) that writes a
   single custom property `--p` (0→1) per section. All the movement is CSS
-  reading that variable, so scrolling never triggers layout reads.
+  reading that variable, so scrolling never triggers layout reads. The loop
+  writes `--p` only when the value actually changed, drops to roughly 30fps once
+  nothing has been touched for a beat, and marks a chapter `data-live` only
+  while it is inside its own scroll window — which is the only place
+  `will-change` is promised.
+- Anchor navigation is handled in `FluxRuntime`, not by `scroll-behavior:
+  smooth` on `<html>`. Global smooth scrolling also animates the browser's own
+  scroll restoration, which on a page this tall gets cancelled part way and
+  drops you back at the top after a reload.
 - The flux line is one `<canvas>` (`components/FluxField.tsx`) drawing three
   strands whose parameters ease toward per-chapter targets each frame.
 - Email goes out over Resend's HTTPS API with plain `fetch` — no SDK.
 
-Total production payload: **~248 KB over 22 requests** (144 KB JS, 87 KB fonts,
-6 KB CSS), first contentful paint ~290 ms locally.
+Zero UI or animation dependencies means the payload is small: the page ships
+one canvas, one stylesheet and the scroll engine.
 
 ---
 
@@ -136,12 +162,12 @@ validates against the same list automatically.
 ```
 app/
   layout.tsx          metadata, fonts, JSON-LD, no-JS fallbacks
-  page.tsx            the seven chapters, server rendered
+  page.tsx            the six chapters, server rendered
   globals.css         the whole design system and every animation
   api/contact/route.ts
   sitemap.ts robots.ts icon.png apple-icon.png
 components/
-  FluxRuntime.tsx     starts the engine, reveals on scroll
+  FluxRuntime.tsx     starts the engine, reveals on scroll, anchor nav
   FluxField.tsx       the flux line canvas
   Track.tsx           registers a section with the engine
   Nav.tsx  ContactForm.tsx
@@ -181,8 +207,13 @@ pairing — the supplied red lockup sets "Studios" and the dot in black.
 - Form errors are inline *and* summarised in a focused `role="alert"` region
   that links to each field. Entered values are always preserved.
 - **Reduced motion un-pins the entire page.** Nothing sticks, nothing morphs,
-  all four process stages and all three registers are on the page at once, and
+  all four process moves and all three depth layers are on the page at once, and
   the line renders as a single static state. It becomes a plain vertical read.
+- Every interactive element is at least 44px tall, padded around the glyph
+  rather than by enlarging it. Hover states are behind `@media (hover: hover)`,
+  so a tap does not leave a control stuck in its hovered state.
+- Under 860px the four section links move into a labelled disclosure menu that
+  closes on Escape and on a click outside, rather than simply disappearing.
 - Without JavaScript the page is complete and readable — `<noscript>` styles
   un-pin everything and reveal all content.
 - Native scrolling throughout. No scroll hijacking, no splash screen, no audio,
@@ -193,5 +224,5 @@ pairing — the supplied red lockup sets "Studios" and the dot in black.
 ## Deliberately not here yet
 
 Case studies, testimonials, client logos, pricing, a lab section, a blog, a CMS.
-The structure leaves room for case studies to slot in after "What we build"
-without disturbing the scroll narrative.
+The structure leaves room for case studies to slot in after chapter 02 without
+disturbing the scroll narrative.
