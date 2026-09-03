@@ -1,0 +1,1621 @@
+/* ===========================================================================
+   Fluxion Studios
+   ---------------------------------------------------------------------------
+   One surface, one line, seven chapters. The page never changes background
+   colour by section — the whole ground crossfades between Just Black and
+   Cornsilk as the story moves between the machine and the people, driven by
+   `data-tone` on <html>.
+   =========================================================================== */
+
+/* --- Nohemi -------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Tokens -------------------------------------------------------------- */
+
+:root {
+  --red: #f5141f;
+  --cornsilk: #fff6e2;
+  --black: #000000;
+
+  --ground: var(--black);
+  --ink: var(--cornsilk);
+  /* Cornsilk on Fluxion Red is only 3.9:1 — under AA at button sizes. Black on
+     red is 5:1, and it is the brand's own pairing: the supplied red lockup sets
+     "Studios" and the signal dot in black. */
+  --on-red: var(--black);
+  --ink-soft: rgba(255, 246, 226, 0.66);
+  --ink-faint: rgba(255, 246, 226, 0.56);
+  --rule: rgba(255, 246, 226, 0.17);
+  --rule-soft: rgba(255, 246, 226, 0.09);
+  --field: rgba(255, 246, 226, 0.045);
+
+  --font-display: 'Nohemi', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  /* Display sizes take the smaller of a width- and a height-derived value, so
+     a short landscape window scales the type down instead of clipping it. */
+  --t-hero: clamp(2.25rem, min(8.2vw, 13.5vh), 9.5rem);
+  --t-display: clamp(2.05rem, min(5.4vw, 9.6vh), 5rem);
+  --t-title: clamp(1.6rem, 3.4vw, 3rem);
+  --t-lead: clamp(1.125rem, 1.75vw, 1.6rem);
+  --t-body: clamp(1rem, 1.05vw, 1.125rem);
+  --t-micro: 0.75rem;
+
+  --gutter: clamp(20px, 5vw, 96px);
+  --bay: clamp(96px, 15vh, 200px);
+  --shell: 1500px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur-mid: 420ms;
+  --dur-slow: 900ms;
+  --dur-tone: 750ms;
+}
+
+:root[data-tone='light'] {
+  --ground: var(--cornsilk);
+  --ink: var(--black);
+  --ink-soft: rgba(0, 0, 0, 0.7);
+  --ink-faint: rgba(0, 0, 0, 0.56);
+  --rule: rgba(0, 0, 0, 0.17);
+  --rule-soft: rgba(0, 0, 0, 0.09);
+  --field: rgba(0, 0, 0, 0.04);
+}
+
+/* --- Reset --------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  background: var(--black);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow-x: clip;
+  font-family: var(--font-body);
+  font-size: var(--t-body);
+  line-height: 1.62;
+  color: var(--ink);
+  background: transparent;
+  -webkit-font-smoothing: antialiased;
+  transition: color var(--dur-tone) var(--ease-io);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  color: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Everything typographic follows the ground when the tone crosses over.
+   Zero specificity, so component rules always win. */
+:where(h1, h2, h3, h4, p, li, span, strong, em, small, label, pre, code, hr) {
+  transition:
+    color var(--dur-tone) var(--ease-io),
+    border-color var(--dur-tone) var(--ease-io);
+}
+
+/* --- Layers -------------------------------------------------------------- */
+
+.ground {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: var(--ground);
+  transition: background-color var(--dur-tone) var(--ease-io);
+}
+
+.flux-field {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+main,
+.nav,
+.footer {
+  position: relative;
+  z-index: 2;
+}
+
+/* --- Utilities ----------------------------------------------------------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+  padding: 12px 18px;
+  font: 500 0.875rem/1 var(--font-display);
+  color: var(--on-red);
+  text-decoration: none;
+  background: var(--red);
+  border-radius: 6px;
+  transform: translateY(-250%);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.eyebrow {
+  font: 500 var(--t-micro) / 1.3 var(--font-display);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* The signal dot from the wordmark, reused as punctuation. */
+.dot {
+  display: inline-block;
+  width: 0.185em;
+  height: 0.185em;
+  margin-left: 0.16em;
+  border-radius: 50%;
+  background: var(--red);
+  vertical-align: baseline;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  padding-bottom: 2px;
+  background-image: linear-gradient(var(--red), var(--red));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size var(--dur-fast) var(--ease-out);
+}
+
+.link:hover {
+  background-size: 100% 2px;
+}
+
+/* --- Buttons ------------------------------------------------------------- */
+
+.btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em 1.7em;
+  font: 500 0.9375rem/1 var(--font-display);
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn--sm {
+  padding: 0.78em 1.25em;
+  font-size: 0.8125rem;
+}
+
+.btn--solid {
+  color: var(--on-red);
+  background: var(--red);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.btn--solid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--cornsilk);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--dur-fast) ease;
+}
+
+.btn--solid:hover::after {
+  opacity: 0.14;
+}
+
+.btn--solid:hover {
+  transform: translateY(-1px);
+}
+
+.btn--solid:active {
+  transform: translateY(0);
+}
+
+.btn--solid:disabled {
+  cursor: progress;
+  opacity: 0.6;
+  transform: none;
+}
+
+.btn--ghost {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--rule);
+  transition:
+    color var(--dur-tone) var(--ease-io),
+    border-color var(--dur-tone) var(--ease-io),
+    background-color var(--dur-fast) ease,
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.btn--ghost:hover {
+  background: var(--field);
+  transform: translateY(-1px);
+}
+
+/* --- Reveal on enter ----------------------------------------------------- */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  /* The tone crossfade has to be listed here too: this shorthand would
+     otherwise replace the inherited colour transition. */
+  transition:
+    opacity var(--dur-slow) var(--ease-out) var(--d, 0s),
+    transform var(--dur-slow) var(--ease-out) var(--d, 0s),
+    color var(--dur-tone) var(--ease-io),
+    border-color var(--dur-tone) var(--ease-io);
+}
+
+[data-reveal][data-in='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Navigation ---------------------------------------------------------- */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(16px, 4vw, 48px);
+  padding: clamp(14px, 2vh, 22px) var(--gutter);
+}
+
+/* A solid masthead rather than a gradient or a glass bar. Display type passing
+   underneath is cut at a crisp line, which reads as deliberate — a soft fade
+   leaves big letterforms looking half-erased. */
+.nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ground);
+  border-bottom: 1px solid var(--rule);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-mid) var(--ease-io),
+    background-color var(--dur-tone) var(--ease-io),
+    border-color var(--dur-tone) var(--ease-io);
+}
+
+.nav[data-stuck='true']::before {
+  opacity: 1;
+}
+
+.nav__brand,
+.footer__brand {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.brandmark {
+  display: grid;
+}
+
+.brandmark__img {
+  grid-area: 1 / 1;
+  width: auto;
+  transition: opacity var(--dur-tone) var(--ease-io);
+}
+
+.nav .brandmark__img {
+  height: 22px;
+}
+
+:root[data-tone='dark'] .brandmark__img--light,
+:root[data-tone='light'] .brandmark__img--dark {
+  opacity: 0;
+}
+
+.nav__links {
+  position: relative;
+  display: flex;
+  gap: clamp(18px, 2.2vw, 34px);
+  margin-left: auto;
+}
+
+.nav__links a {
+  font: 500 0.8125rem/1 var(--font-display);
+  color: var(--ink-faint);
+  text-decoration: none;
+  transition:
+    color var(--dur-fast) ease;
+}
+
+.nav__links a:hover {
+  color: var(--ink);
+}
+
+.nav__cta {
+  position: relative;
+  flex: none;
+}
+
+/* --- Hero ---------------------------------------------------------------- */
+
+.hero {
+  height: 210vh;
+  height: 210svh;
+}
+
+.hero__stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100vh;
+  height: 100svh;
+  padding: clamp(90px, 13vh, 150px) var(--gutter) clamp(24px, 4vh, 48px);
+}
+
+.hero__inner {
+  align-self: center;
+  justify-items: start;
+  display: grid;
+  gap: clamp(20px, 3vh, 38px);
+  width: 100%;
+  max-width: var(--shell);
+  margin: 0 auto;
+  transform-origin: 0% 40%;
+  transform: translate3d(0, calc(var(--p, 0) * -7vh), 0) scale(calc(1 + var(--p, 0) * 0.1));
+  opacity: clamp(0, calc(1 - var(--p, 0) * 1.4), 1);
+  will-change: transform, opacity;
+}
+
+.hero__eyebrow {
+  animation: fadeUp 0.8s var(--ease-out) both;
+  animation-delay: 0.05s;
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--t-hero);
+  line-height: 0.9;
+  letter-spacing: calc(-0.038em - var(--p, 0) * 0.008em);
+}
+
+/* The clip box is grown by padding and pulled back by margin, so descenders
+   survive the reveal without changing the layout. */
+.hero__line {
+  display: block;
+  overflow: hidden;
+  padding: 0.1em 0.08em 0.16em;
+  margin: -0.1em -0.08em -0.16em;
+}
+
+.hero__line-in {
+  display: block;
+  transform: translateY(108%);
+  animation: rise 1s var(--ease-out) forwards;
+  animation-delay: var(--d, 0s);
+}
+
+.hero__title .dot {
+  transform: scale(0);
+  animation: pop 0.55s var(--ease-out) forwards;
+  animation-delay: 1s;
+}
+
+.hero__lede {
+  max-width: 44ch;
+  font-size: var(--t-lead);
+  color: var(--ink-soft);
+  text-wrap: pretty;
+  animation: fadeUp 0.8s var(--ease-out) both;
+  animation-delay: 0.5s;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  animation: fadeUp 0.8s var(--ease-out) both;
+  animation-delay: 0.62s;
+}
+
+.hero__cue {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  align-self: end;
+  font: 500 var(--t-micro) / 1 var(--font-display);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  opacity: clamp(0, calc(1 - var(--p, 0) * 5), 1);
+}
+
+.hero__cue::after {
+  content: '';
+  width: 44px;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left;
+  animation: cue 2.6s var(--ease-io) infinite;
+}
+
+@keyframes rise {
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes cue {
+  0%,
+  100% {
+    transform: scaleX(0.25);
+  }
+  50% {
+    transform: scaleX(1);
+  }
+}
+
+/* --- Philosophy ---------------------------------------------------------- */
+
+.philosophy {
+  display: grid;
+  gap: clamp(56px, 9vh, 130px);
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: var(--bay) var(--gutter);
+}
+
+.philosophy__lead {
+  --p: 0;
+  display: grid;
+  gap: clamp(20px, 3vh, 38px);
+}
+
+.sweep {
+  max-width: 19ch;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--t-display);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+}
+
+.sweep__w {
+  display: inline-block;
+  opacity: calc(0.13 + 0.87 * clamp(0, calc(var(--p, 1) * var(--n) - var(--i)), 1));
+}
+
+.philosophy__body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 76px);
+  max-width: 1080px;
+  margin-left: auto;
+}
+
+.philosophy__body p {
+  font-size: var(--t-lead);
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+/* --- What we build ------------------------------------------------------- */
+
+.build {
+  --reg-w: min(74vw, 560px);
+  --reg-gap: clamp(28px, 4vw, 80px);
+  --track-w: calc(var(--reg-w) * 3 + var(--reg-gap) * 2);
+  --shift: max(0px, calc(var(--track-w) + var(--gutter) * 2 - 100vw));
+  height: calc(100vh + var(--shift));
+  height: calc(100svh + var(--shift));
+}
+
+.build__stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(28px, 5vh, 64px);
+  height: 100vh;
+  height: 100svh;
+  padding: clamp(90px, 13vh, 150px) 0 clamp(28px, 5vh, 56px);
+}
+
+.build__head {
+  display: grid;
+  gap: 14px;
+  padding-inline: var(--gutter);
+}
+
+.build__lead {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--t-title);
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+}
+
+.build__rail {
+  align-self: center;
+  overflow: hidden;
+}
+
+.build__track {
+  display: flex;
+  gap: var(--reg-gap);
+  padding-inline: var(--gutter);
+  margin: 0;
+  list-style: none;
+  transform: translate3d(calc(var(--shift) * var(--p, 0) * -1), 0, 0);
+  will-change: transform;
+}
+
+.reg {
+  flex: 0 0 var(--reg-w);
+  display: grid;
+  align-content: start;
+  gap: clamp(13px, 1.8vh, 20px);
+}
+
+.reg__rule {
+  display: block;
+  height: 1px;
+  background: var(--red);
+  opacity: 0.85;
+}
+
+.reg__kicker {
+  font: 500 var(--t-micro) / 1.3 var(--font-display);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.reg__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.55rem, 3.1vw, 2.85rem);
+  line-height: 1.02;
+  letter-spacing: -0.032em;
+}
+
+.reg__body {
+  max-width: 42ch;
+  color: var(--ink-soft);
+}
+
+.reg__detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em 1.3em;
+  margin: 0.4em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reg__detail li {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.reg__detail li::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin-right: 0.7em;
+  vertical-align: middle;
+  background: var(--red);
+  border-radius: 50%;
+}
+
+.build__meter {
+  position: relative;
+  height: 1px;
+  margin-inline: var(--gutter);
+  background: var(--rule);
+}
+
+.build__meter span {
+  position: absolute;
+  inset: 0;
+  background: var(--red);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+}
+
+/* --- Process ------------------------------------------------------------- */
+
+.process {
+  height: 440vh;
+  height: 440svh;
+}
+
+.process__stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(24px, 4vh, 48px);
+  height: 100vh;
+  height: 100svh;
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: clamp(90px, 13vh, 150px) var(--gutter) clamp(28px, 5vh, 56px);
+}
+
+.process__head {
+  display: grid;
+  gap: 14px;
+}
+
+.process__lead {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--t-title);
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+}
+
+.process__stages {
+  display: grid;
+  align-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stage {
+  grid-area: 1 / 1;
+  --local: calc(var(--p, 0) * 4 - var(--i));
+  --in: clamp(0, calc(var(--local) * 5), 1);
+  --out: clamp(0, calc(5 - var(--local) * 5), 1);
+  --vis: min(var(--in), var(--out));
+  --lc: clamp(0, var(--local), 1);
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: clamp(14px, 2.2vh, 26px);
+  opacity: var(--vis);
+  transform: translate3d(0, calc((0.5 - var(--lc)) * 2.2rem), 0);
+}
+
+.stage--last {
+  --vis: var(--in);
+}
+
+.stage__name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.4rem, min(9vw, 13vh), 8.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.042em;
+}
+
+.stage__body {
+  max-width: 34ch;
+  font-size: var(--t-lead);
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+.process__meter {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(8px, 1.4vw, 22px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.process__meter li {
+  --fill: clamp(0, calc(var(--p, 0) * 4 - var(--i)), 1);
+  display: grid;
+  gap: 10px;
+}
+
+.process__seg {
+  position: relative;
+  height: 2px;
+  overflow: hidden;
+  background: var(--rule);
+}
+
+.process__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--red);
+  transform: scaleX(var(--fill));
+  transform-origin: left;
+}
+
+.process__label {
+  font: 500 var(--t-micro) / 1 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  color: color-mix(in srgb, var(--ink) calc(var(--fill) * 100%), var(--ink-faint));
+}
+
+/* --- Under the surface --------------------------------------------------- */
+
+.surface {
+  display: grid;
+  gap: clamp(40px, 7vh, 100px);
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: var(--bay) var(--gutter);
+}
+
+.surface__head {
+  display: grid;
+  gap: clamp(14px, 2vh, 24px);
+  max-width: 60ch;
+}
+
+.surface__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--t-display);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.surface__body {
+  font-size: var(--t-lead);
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+.surface__stack {
+  --p: 0;
+  position: relative;
+}
+
+.surface__trace {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  background: var(--rule);
+}
+
+.surface__trace-fill {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100%;
+  background: var(--red);
+  transform: scaleY(var(--p, 0));
+  transform-origin: top;
+}
+
+.surface__trace-dot {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--p, 0) * 100%);
+  width: 9px;
+  height: 9px;
+  background: var(--red);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.layers {
+  display: grid;
+  gap: clamp(28px, 5vh, 72px);
+  margin: 0;
+  padding: 0 0 0 clamp(24px, 4vw, 64px);
+  list-style: none;
+}
+
+.layer {
+  --local: calc(var(--p, 0) * 3 - var(--i));
+  --on: clamp(0, calc(var(--local) * 2), 1);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: clamp(20px, 3vw, 56px);
+  align-items: start;
+  padding-top: clamp(20px, 3vh, 34px);
+  border-top: 1px solid var(--rule);
+}
+
+.layer__name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  line-height: 1;
+  letter-spacing: -0.032em;
+}
+
+.layer__body {
+  max-width: 30ch;
+  margin-top: 10px;
+  color: var(--ink-soft);
+}
+
+/* Aligned to the right edge so the panels sit flush with the hairline rules
+   that divide the layers. */
+.layer__frag {
+  justify-self: end;
+  opacity: calc(0.4 + var(--on) * 0.6);
+  transform: translate3d(0, calc((1 - var(--on)) * 14px), 0);
+}
+
+/* These panels depict interfaces and code, so a bordered panel is
+   representational here rather than decoration. Each one hugs its content
+   instead of stretching to the column. */
+.frag {
+  padding: clamp(14px, 2vw, 20px);
+  background: var(--field);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.frag--ui {
+  display: grid;
+  gap: 14px;
+  max-width: 400px;
+}
+
+.frag--code {
+  width: max-content;
+  max-width: 100%;
+}
+
+.frag__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.frag__dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  background: var(--red);
+  border-radius: 50%;
+}
+
+.frag__pill {
+  width: 64px;
+  height: 6px;
+  background: var(--rule);
+  border-radius: 3px;
+}
+
+.frag__pill--sm {
+  width: 38px;
+}
+
+.frag__body {
+  display: grid;
+  gap: 9px;
+  justify-items: start;
+}
+
+.frag__h {
+  width: 72%;
+  height: 15px;
+  background: var(--ink);
+  opacity: 0.8;
+  border-radius: 2px;
+}
+
+.frag__h--sm {
+  width: 48%;
+}
+
+.frag__line {
+  width: 100%;
+  height: 6px;
+  background: var(--rule);
+  border-radius: 3px;
+}
+
+.frag__line--short {
+  width: 62%;
+}
+
+.frag__btn {
+  margin-top: 8px;
+  padding: 9px 14px;
+  font: 500 11px/1 var(--font-display);
+  color: var(--on-red);
+  background: var(--red);
+  border-radius: 5px;
+}
+
+.frag--code {
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: clamp(10.5px, 1vw, 13px);
+  line-height: 1.8;
+  color: var(--ink-soft);
+  white-space: pre;
+}
+
+.surface__note {
+  padding-left: clamp(24px, 4vw, 64px);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+
+/* --- About --------------------------------------------------------------- */
+
+.about {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(36px, 6vh, 84px) clamp(24px, 3vw, 64px);
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: var(--bay) var(--gutter);
+}
+
+.about__head {
+  grid-column: 1 / 6;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+}
+
+.about__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--t-title);
+  line-height: 1.02;
+  letter-spacing: -0.032em;
+}
+
+.about__story {
+  grid-column: 7 / -1;
+  display: grid;
+  gap: 1.1em;
+  max-width: 52ch;
+  font-size: var(--t-lead);
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+.people {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 72px);
+  margin: clamp(8px, 2vh, 32px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 7px;
+  padding-top: clamp(16px, 2.4vh, 28px);
+  border-top: 1px solid var(--rule);
+}
+
+.person__name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+  line-height: 1;
+  letter-spacing: -0.032em;
+}
+
+.person__role {
+  font: 500 var(--t-micro) / 1.4 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.person__role::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 0.7em;
+  vertical-align: middle;
+  background: var(--red);
+  border-radius: 50%;
+}
+
+.person__study {
+  color: var(--ink-soft);
+}
+
+.person .link {
+  margin-top: 6px;
+  font-size: 0.9375rem;
+}
+
+/* --- Contact ------------------------------------------------------------- */
+
+.contact {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(40px, 6vh, 80px) clamp(32px, 4vw, 80px);
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: var(--bay) var(--gutter) clamp(64px, 10vh, 130px);
+}
+
+.contact__intro {
+  grid-column: 1 / 6;
+  align-self: start;
+  position: sticky;
+  top: clamp(96px, 15vh, 170px);
+  display: grid;
+  gap: clamp(16px, 2.4vh, 30px);
+}
+
+.contact__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.9rem, 3.6vw, 3.2rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+
+.contact__line {
+  display: block;
+}
+
+.contact__body {
+  max-width: 38ch;
+  font-size: var(--t-lead);
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+.contact__form {
+  grid-column: 7 / -1;
+}
+
+/* --- Form ---------------------------------------------------------------- */
+
+.form {
+  display: grid;
+  gap: clamp(22px, 3vh, 34px);
+}
+
+.form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2.2vw, 26px);
+}
+
+.field {
+  display: grid;
+  gap: 9px;
+}
+
+.field--wide {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font: 500 var(--t-micro) / 1.2 var(--font-display);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.field__optional {
+  letter-spacing: 0.02em;
+  text-transform: none;
+  opacity: 0.75;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.85em 0.95em;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--field);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  transition:
+    border-color var(--dur-fast) ease,
+    background-color var(--dur-fast) ease;
+}
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
+  border-color: var(--ink-faint);
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  border-color: transparent;
+  outline: 2px solid var(--red);
+  outline-offset: 1px;
+}
+
+.field [aria-invalid='true'] {
+  border-color: var(--red);
+}
+
+.field ::placeholder {
+  color: var(--ink-faint);
+  opacity: 1;
+}
+
+.field select option {
+  color: var(--black);
+  background: var(--cornsilk);
+}
+
+.select {
+  position: relative;
+  display: block;
+}
+
+.select select {
+  appearance: none;
+  padding-right: 3em;
+}
+
+.select::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 1.15em;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid var(--ink-faint);
+  border-bottom: 1.5px solid var(--ink-faint);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.field__error {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--red);
+}
+
+.form__summary {
+  display: grid;
+  gap: 8px;
+  padding: 14px 0 14px 18px;
+  border-left: 2px solid var(--red);
+}
+
+.form__summary:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 6px;
+}
+
+.form__summary-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.form__summary-detail {
+  font-size: 0.875rem;
+  color: var(--ink-faint);
+}
+
+.form__summary ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 1.15em;
+}
+
+.form__summary a {
+  color: var(--red);
+}
+
+.form__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+}
+
+.form__aside {
+  font-size: 0.875rem;
+  color: var(--ink-faint);
+}
+
+.form-done {
+  display: grid;
+  justify-items: start;
+  gap: 15px;
+  padding-top: clamp(24px, 4vh, 44px);
+  border-top: 1px solid var(--rule);
+}
+
+.form-done:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 8px;
+}
+
+.form-done__dot {
+  width: 14px;
+  height: 14px;
+  background: var(--red);
+  border-radius: 50%;
+  animation: pop 0.5s var(--ease-out) both;
+}
+
+.form-done__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.032em;
+}
+
+.form-done__body {
+  max-width: 44ch;
+  color: var(--ink-soft);
+}
+
+.form-done .btn {
+  margin-top: 8px;
+}
+
+/* --- Footer -------------------------------------------------------------- */
+
+.footer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: clamp(18px, 3vh, 30px) clamp(24px, 4vw, 60px);
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: clamp(36px, 6vh, 72px) var(--gutter) clamp(32px, 5vh, 60px);
+  border-top: 1px solid var(--rule);
+}
+
+.footer .brandmark__img {
+  height: clamp(14px, 2.6vw, 26px);
+}
+
+.footer__brand {
+  grid-area: 1 / 1;
+}
+
+.footer__links {
+  grid-area: 1 / 2;
+  display: flex;
+  gap: clamp(18px, 2.4vw, 32px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  justify-self: end;
+}
+
+.footer__note,
+.footer__legal {
+  font-size: 0.875rem;
+  color: var(--ink-faint);
+}
+
+.footer__note {
+  grid-area: 2 / 1;
+}
+
+.footer__legal {
+  grid-area: 2 / 2;
+  justify-self: end;
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .about__head,
+  .about__story,
+  .contact__intro,
+  .contact__form {
+    grid-column: 1 / -1;
+  }
+
+  .contact__intro {
+    position: static;
+  }
+
+  .about__story {
+    max-width: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .nav__links {
+    display: none;
+  }
+
+  .philosophy__body {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 60ch;
+  }
+
+  .layer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .layer__body {
+    max-width: 46ch;
+  }
+
+  /* Stacked, the panels read better filling the column than hugging an edge. */
+  .layer__frag {
+    justify-self: stretch;
+  }
+
+  .frag--ui {
+    max-width: none;
+  }
+
+  .frag--code {
+    width: auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .build {
+    --reg-w: 82vw;
+  }
+
+  .process {
+    height: 380svh;
+  }
+
+  .people,
+  .form__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer__brand,
+  .footer__links,
+  .footer__note,
+  .footer__legal {
+    grid-area: auto;
+    justify-self: start;
+  }
+
+  .hero__actions .btn {
+    flex: 1 1 auto;
+  }
+}
+
+/* --- Reduced motion ------------------------------------------------------
+   The story becomes a plain vertical read: nothing pins, nothing morphs, and
+   every stage is on the page at once. */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .hero,
+  .build,
+  .process {
+    height: auto;
+  }
+
+  .hero__stage,
+  .build__stage,
+  .process__stage {
+    position: static;
+    height: auto;
+    min-height: 0;
+  }
+
+  .hero__stage {
+    min-height: 88vh;
+    padding-block: clamp(120px, 20vh, 200px) var(--bay);
+  }
+
+  .hero__inner {
+    transform: none;
+    opacity: 1;
+  }
+
+  .hero__line-in {
+    transform: none;
+    animation: none;
+  }
+
+  .hero__title .dot {
+    transform: none;
+    animation: none;
+  }
+
+  .hero__cue {
+    display: none;
+  }
+
+  .build__stage,
+  .process__stage {
+    padding-block: var(--bay);
+  }
+
+  .build__rail {
+    overflow: visible;
+  }
+
+  .build__track {
+    flex-direction: column;
+    gap: clamp(36px, 6vh, 72px);
+    transform: none;
+  }
+
+  .reg {
+    flex: 1 1 auto;
+  }
+
+  .build__meter,
+  .process__meter,
+  .surface__trace {
+    display: none;
+  }
+
+  .process__stages {
+    gap: clamp(36px, 6vh, 72px);
+  }
+
+  .stage {
+    grid-area: auto;
+    opacity: 1;
+    transform: none;
+  }
+
+  .stage__name {
+    font-size: clamp(2rem, 5vw, 4rem);
+  }
+
+  .sweep__w {
+    opacity: 1;
+  }
+
+  .layers {
+    padding-left: 0;
+  }
+
+  .layer__frag {
+    opacity: 1;
+    transform: none;
+  }
+
+  .surface__note {
+    padding-left: 0;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}

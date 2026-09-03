@@ -1,0 +1,5 @@
+# unrs-resolver ships a native binding used by the ESLint import resolver.
+# Its install script is not run; ESLint falls back to its JavaScript resolver,
+# which is all this project needs.
+allowBuilds:
+  unrs-resolver: false
