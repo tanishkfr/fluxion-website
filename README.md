@@ -32,7 +32,10 @@ process morph (pinned, four moves, the line becoming a dot). Everything else
 stays restrained so those three land.
 
 Every pinned beat is enter → **hold** → exit, never one continuous ramp. Nothing
-is ever asked to be read while it is moving.
+is ever asked to be read while it is moving, and the outgoing beat is fully gone
+at the instant the next one starts — two words that size superimposed at 30%
+each leaves neither of them readable, and a brief empty beat between them is
+what the black ground is for.
 
 **The page documents itself.** The interface / data / systems fragments describe
 *this page's own contact endpoint* — the real schema, the real rate limit, the
@@ -197,6 +200,30 @@ pairing — the supplied red lockup sets "Studios" and the dot in black.
 
 ---
 
+## Composition
+
+Every chapter used to set its type in the left 45% of the frame and leave the
+right half empty. Good typography, but six chapters of one layout reads as a
+template no matter how well each one is set. Each chapter now owns a different
+composition, and the frame is used:
+
+| Chapter | Composition |
+| --- | --- |
+| Hero | Left-set, largest type on the page, the line working the open right side |
+| 01 Translation | One wall of type running the full measure, body stepped in beneath it |
+| 02 Surface & system | Two columns — copy left, a panel holding the right — on one grid from the title down to the readout |
+| 03 Four moves | **Centred.** The only symmetrical chapter, so the change of rhythm reads as deliberate |
+| 04 The two of us | Two full-height columns: the title and the two of us on the left, the story beside them |
+| 05 Start here | Split: the invitation left, the form right |
+
+The centred chapter needs its own protection from the flux line. The line's
+alpha ramp keeps it clear of type set on the left, which does nothing for type
+set in the middle, so the four moves sit on a soft ellipse of the ground colour
+that the line passes behind. On a black ground it is invisible as a shape — all
+it does is stop the staircase running through the word you are reading.
+
+---
+
 ## Accessibility and motion
 
 - Semantic landmarks, one `<h1>`, no skipped heading levels, skip link.
@@ -209,6 +236,14 @@ pairing — the supplied red lockup sets "Studios" and the dot in black.
 - **Reduced motion un-pins the entire page.** Nothing sticks, nothing morphs,
   all four process moves and all three depth layers are on the page at once, and
   the line renders as a single static state. It becomes a plain vertical read.
+  The handoff's negative margin is lifted with it — that overlap only works
+  because the hero is pinned and fading, and without the pin the hero and the
+  statement print straight on top of each other.
+- **Chapter 02 un-pins below 860px as well.** A plane holds a label, a title, a
+  paragraph, four details and a panel; on a phone that is roughly 600px of
+  content inside a 400px row, and the panel was being clipped off the bottom of
+  every one of them. The three depths become three blocks you scroll through.
+  Nothing is dropped. The four moves still pin — centred type fits a phone.
 - Every interactive element is at least 44px tall, padded around the glyph
   rather than by enlarging it. Hover states are behind `@media (hover: hover)`,
   so a tap does not leave a control stuck in its hovered state.

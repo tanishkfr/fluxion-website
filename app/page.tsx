@@ -230,10 +230,10 @@ export default function Home() {
                 </li>
               ))}
             </ol>
+
+            <p className="depth__note">{site.depth.note}</p>
           </div>
         </Track>
-
-        <p className="depth__note">{site.depth.note}</p>
 
         {/* ── 03 Four moves ──────────────────────────────────────────────── */}
         <Track

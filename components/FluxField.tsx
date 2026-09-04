@@ -70,23 +70,27 @@ const SCENES: Record<SceneName, Keyframe[]> = {
   ],
   // Sits low, like a horizon, so the statement and the body copy stay clean.
   philosophy: [
-    [0, { y: 0.86, amp: 0.045, freq: 0.65, noise: 0.05, spread: 0.16, alpha: 0.45, pointer: 0.3 }],
-    [1, { y: 0.88, amp: 0.03, freq: 0.5, noise: 0.03, spread: 0.1, alpha: 0.4, pointer: 0.2 }],
+    [0, { y: 0.93, amp: 0.03, freq: 0.6, noise: 0.04, spread: 0.14, alpha: 0.3, pointer: 0.3 }],
+    [1, { y: 0.95, amp: 0.02, freq: 0.5, noise: 0.02, spread: 0.09, alpha: 0.26, pointer: 0.2 }],
   ],
   // Travelling inward: the three strands open out as the surface layer passes,
   // then draw back together as the page arrives at the systems underneath. A
-  // request runs along the core strand the whole way down.
+  // request runs along the core strand the whole way down. It all happens below
+  // the planes — three of them cross the middle of the frame, and a line
+  // through the middle of a paragraph is a strikethrough, not a background.
   depth: [
-    [0, { y: 0.5, amp: 0.07, freq: 0.7, noise: 0.04, spread: 0.5, alpha: 0.55, pulse: 0.8, pointer: 0.3 }],
-    [0.5, { y: 0.5, amp: 0.085, freq: 0.75, noise: 0.035, spread: 1, alpha: 0.7, pulse: 1, pointer: 0.25 }],
-    [1, { y: 0.5, amp: 0.05, freq: 0.6, noise: 0.02, spread: 0.34, alpha: 0.6, pulse: 1, pointer: 0.2 }],
+    [0, { y: 0.84, amp: 0.05, freq: 0.7, noise: 0.03, spread: 0.5, alpha: 0.34, pulse: 0.8, pointer: 0.3 }],
+    [0.5, { y: 0.86, amp: 0.06, freq: 0.75, noise: 0.03, spread: 1, alpha: 0.42, pulse: 1, pointer: 0.25 }],
+    [1, { y: 0.84, amp: 0.04, freq: 0.6, noise: 0.02, spread: 0.34, alpha: 0.36, pulse: 1, pointer: 0.2 }],
   ],
   // The four moves: scatter, curve, grid, point.
   process: [
-    [0, { y: 0.5, amp: 0.19, freq: 1.7, noise: 0.6, spread: 0.7, alpha: 0.85, pointer: 0.3 }],
-    [0.34, { y: 0.5, amp: 0.13, freq: 0.85, noise: 0.05, spread: 0.34, alpha: 0.85, pointer: 0.3 }],
-    [0.68, { y: 0.5, amp: 0.11, freq: 0.8, noise: 0.02, spread: 0.3, grid: 1, alpha: 0.85 }],
-    [1, { y: 0.5, amp: 0.04, freq: 0.8, noise: 0, spread: 0.08, grid: 0.5, converge: 1, dot: 0.03, alpha: 1 }],
+    [0, { y: 0.5, amp: 0.125, freq: 1.55, noise: 0.5, spread: 0.55, alpha: 0.5, pointer: 0.3 }],
+    [0.34, { y: 0.5, amp: 0.1, freq: 0.85, noise: 0.05, spread: 0.3, alpha: 0.58, pointer: 0.3 }],
+    [0.68, { y: 0.5, amp: 0.09, freq: 0.8, noise: 0.02, spread: 0.26, grid: 1, alpha: 0.62 }],
+    // Settles below the type as it collapses, so the dot lands in open space
+    // under the last move rather than in the middle of the word.
+    [1, { y: 0.79, amp: 0.035, freq: 0.8, noise: 0, spread: 0.07, grid: 0.5, converge: 1, dot: 0.028, alpha: 1 }],
   ],
   about: [
     [0, { y: 0.5, amp: 0.028, freq: 0.4, noise: 0.02, spread: 0.2, alpha: 0.3, pointer: 0.2 }],

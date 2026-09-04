@@ -112,6 +112,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             .hero__stage,.depth__stage,.process__stage{position:static!important;height:auto!important;padding-block:var(--bay)}
             .hero__inner{transform:none!important;opacity:1!important}
             .hero__cue{display:none}
+            .philosophy{margin-top:0!important}
+            .process__stages::before{display:none}
             .depth__field{overflow:visible}
             .planes{gap:clamp(40px,7vh,88px)}
             .plane{grid-area:auto!important;opacity:1!important;transform:none!important;align-items:start}

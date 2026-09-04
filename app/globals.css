@@ -648,12 +648,14 @@ main,
   max-width: var(--shell);
   margin: 0 auto;
   transform-origin: 0% 40%;
-  transform: translate3d(0, calc(var(--p, 0) * -18vh), 0) scale(calc(1 + var(--p, 0) * 0.09));
-  /* Holds full strength while the headline is still the only thing on screen,
-     then clears out well before the pin ends — the next chapter is rising
-     underneath it by then, and two blocks of type at 40% each on top of one
-     another is not a crossfade, it is a collision. */
-  opacity: clamp(0, calc(1.3 - var(--p, 0) * 1.7), 1);
+  /* Climbs as it goes rather than only fading. The lift is what makes the long
+     dissolve safe: by the time the statement below has risen into the middle of
+     the screen, the headline has already left that band, so the two overlap in
+     time without ever overlapping in space. Fading out early instead — which is
+     the obvious way to avoid the collision — empties the top of the screen for
+     a few hundred pixels while the next chapter is still climbing. */
+  transform: translate3d(0, calc(var(--p, 0) * -46vh), 0) scale(calc(1 + var(--p, 0) * 0.09));
+  opacity: clamp(0, calc(1.25 - var(--p, 0) * 1.35), 1);
 }
 
 /* Promised to the compositor only while this chapter is actually moving.
@@ -784,7 +786,7 @@ main,
   display: grid;
   gap: clamp(56px, 9vh, 130px);
   max-width: var(--shell);
-  margin: -58svh auto 0;
+  margin: -72svh auto 0;
   padding: var(--bay) var(--gutter);
 }
 
@@ -794,13 +796,17 @@ main,
   gap: clamp(20px, 3vh, 38px);
 }
 
+/* The statement runs wide and large rather than sitting in a left column with
+   half the frame empty beside it. This chapter is the one wall of type on the
+   page — a single sentence owning the whole width — which is what makes it read
+   as a different kind of moment from the hero rather than a second headline. */
 .sweep {
-  max-width: 19ch;
+  max-width: 26ch;
   font-family: var(--font-display);
   font-weight: 300;
-  font-size: var(--t-display);
-  line-height: 1.02;
-  letter-spacing: -0.028em;
+  font-size: clamp(2.05rem, min(6.6vw, 11vh), 6.4rem);
+  line-height: 0.99;
+  letter-spacing: -0.03em;
 }
 
 .sweep__w {
@@ -808,11 +814,13 @@ main,
   opacity: calc(0.13 + 0.87 * clamp(0, calc(var(--p, 1) * var(--n) - var(--i)), 1));
 }
 
+/* Stepped in from the left edge the statement starts on, so the eye drops from
+   the wall of type into a narrower, quieter measure. */
 .philosophy__body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(28px, 4vw, 76px);
-  max-width: 1080px;
+  max-width: 1150px;
   margin-left: auto;
 }
 
@@ -845,8 +853,8 @@ main,
   position: sticky;
   top: 0;
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: clamp(24px, 4vh, 56px);
+  grid-template-rows: auto 1fr auto auto;
+  gap: clamp(20px, 3.2vh, 44px);
   height: 100vh;
   height: 100svh;
   max-width: var(--shell);
@@ -854,10 +862,18 @@ main,
   padding: clamp(90px, 13vh, 150px) var(--gutter) clamp(28px, 5vh, 56px);
 }
 
+/* Split on the same columns as the planes below it, so the chapter reads on
+   one grid from its title down to its readout instead of a left-set header
+   sitting above an unrelated two-column composition. */
 .depth__head {
   display: grid;
-  gap: 14px;
-  max-width: 46ch;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: end;
+  gap: clamp(14px, 4vw, 72px);
+}
+
+.depth__head .mark {
+  grid-column: 1 / -1;
 }
 
 .depth__lead {
@@ -869,7 +885,8 @@ main,
 }
 
 .depth__sub {
-  max-width: 52ch;
+  max-width: 46ch;
+  padding-bottom: 0.25em;
   color: var(--ink-soft);
   text-wrap: pretty;
 }
@@ -898,9 +915,9 @@ main,
 /*
   Each plane has three beats, not one continuous ramp:
 
-    enter   local 0    → 0.3    scale 0.88 → 1, fading up
-    hold    local 0.3  → 0.8    scale exactly 1, fully opaque — still
-    exit    local 0.8  → 1.25   scale 1 → 1.10, fading out on a squared curve
+    enter   local 0     → 0.22   scale 0.88 → 1, fading up
+    hold    local 0.22  → 0.78   scale exactly 1, fully opaque — still
+    exit    local 0.78  → 1.00   scale 1 → 1.10, fading out on a squared curve
 
   The hold is the point. A plane that scales the whole time it is on screen is
   never actually readable, and at anything above scale 1 the copy runs past the
@@ -915,8 +932,8 @@ main,
 .plane {
   grid-area: 1 / 1;
   --local: calc(var(--p, 0) * var(--planes) - var(--i) + 0.3);
-  --enter: clamp(0, calc(var(--local) / 0.3), 1);
-  --exit: clamp(0, calc((var(--local) - 0.8) / 0.45), 1);
+  --enter: clamp(0, calc(var(--local) / 0.22), 1);
+  --exit: clamp(0, calc((var(--local) - 0.78) / 0.22), 1);
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: clamp(24px, 4vw, 72px);
@@ -1004,7 +1021,7 @@ main,
 }
 
 .plane__frag {
-  justify-self: end;
+  justify-self: stretch;
   /* A touch behind the copy, so the two do not move as one flat card. */
   /* A touch behind the copy on the way in, so the pair does not move as one
      flat card. It is level with the copy through the whole hold. */
@@ -1052,14 +1069,12 @@ main,
   color: color-mix(in srgb, var(--ink) calc(var(--fill) * 100%), var(--ink-faint));
 }
 
-/* Sits after the pin releases: the chapter's own footnote, and the only place
-   the page points at itself. */
+/* The chapter's own footnote, and the only place the page points at itself.
+   It sits inside the pinned stage, directly under the readout it belongs to.
+   Outside the pin it was stranded with the meter on an otherwise empty screen
+   between this chapter and the next — a dead beat in the middle of the story. */
 .depth__note {
-  position: relative;
-  z-index: 2;
-  max-width: var(--shell);
-  margin: 0 auto;
-  padding: clamp(40px, 7vh, 90px) var(--gutter) clamp(48px, 9vh, 120px);
+  margin: 0;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   color: var(--ink-faint);
@@ -1069,28 +1084,33 @@ main,
    representational here rather than decoration. Each one hugs its content
    instead of stretching to the column. */
 .frag {
-  padding: clamp(14px, 2vw, 20px);
+  min-height: clamp(220px, 34vh, 340px);
+  padding: clamp(18px, 2.4vw, 30px);
   background: var(--field);
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
+/* Both fragment kinds fill the column they are given and share one height, so
+   the three planes do not each rebalance the composition as they pass. */
 .frag--ui {
   display: grid;
-  gap: 14px;
-  max-width: 400px;
+  align-content: start;
+  gap: clamp(12px, 1.6vh, 18px);
 }
 
 .frag--code {
-  width: max-content;
-  max-width: 100%;
+  display: grid;
+  align-content: center;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .frag__bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-bottom: 13px;
+  gap: 10px;
+  padding-bottom: clamp(14px, 2vh, 20px);
   border-bottom: 1px solid var(--rule-soft);
 }
 
@@ -1103,59 +1123,63 @@ main,
 }
 
 .frag__pill {
-  width: 64px;
-  height: 6px;
+  width: 78px;
+  height: 7px;
   background: var(--rule);
   border-radius: 3px;
 }
 
 .frag__pill--sm {
-  width: 38px;
+  width: 46px;
 }
 
 .frag__body {
   display: grid;
-  gap: 9px;
+  gap: clamp(10px, 1.4vh, 14px);
   justify-items: start;
 }
 
 .frag__h {
-  width: 72%;
-  height: 15px;
+  width: 52%;
+  height: clamp(16px, 2.2vh, 22px);
   background: var(--ink);
-  opacity: 0.8;
+  opacity: 0.82;
   border-radius: 2px;
 }
 
 .frag__h--sm {
-  width: 48%;
+  width: 33%;
 }
 
 .frag__line {
-  width: 100%;
-  height: 6px;
+  width: 74%;
+  height: 7px;
   background: var(--rule);
   border-radius: 3px;
 }
 
+.frag__line + .frag__line {
+  width: 68%;
+}
+
 .frag__line--short {
-  width: 62%;
+  width: 42%;
 }
 
 .frag__btn {
-  margin-top: 8px;
-  padding: 9px 14px;
-  font: 500 11px/1 var(--font-display);
+  margin-top: clamp(6px, 1.4vh, 14px);
+  padding: 11px 17px;
+  font: 500 12px/1 var(--font-display);
   color: var(--on-red);
   background: var(--red);
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
 .frag--code {
   overflow-x: auto;
   font-family: var(--font-mono);
-  font-size: clamp(10.5px, 1vw, 13px);
-  line-height: 1.8;
+  font-size: clamp(11px, 1.05vw, 14px);
+  line-height: 1.95;
   color: var(--ink-soft);
   white-space: pre;
 }
@@ -1185,8 +1209,12 @@ main,
 }
 
 .process__head {
+  position: relative;
+  z-index: 1;
   display: grid;
+  justify-items: center;
   gap: 14px;
+  text-align: center;
 }
 
 .process__lead {
@@ -1198,11 +1226,31 @@ main,
 }
 
 .process__stages {
+  position: relative;
+  isolation: isolate;
   display: grid;
   align-content: center;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.process__stages::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  /* Kept inside its own row. This element makes a stacking context, so it
+     paints after the chapter head above it — reach past the row and the
+     ellipse lands on the lead instead of behind the moves. */
+  inset: 20% -6%;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    var(--ground) 0%,
+    var(--ground) 28%,
+    transparent 66%
+  );
+  transition: background-color var(--dur-tone) var(--ease-tone);
+  pointer-events: none;
 }
 
 /* Same three beats as the depth planes — enter, hold, exit — so the four moves
@@ -1212,12 +1260,17 @@ main,
 .stage {
   grid-area: 1 / 1;
   --local: calc(var(--p, 0) * 4 - var(--i) + 0.28);
-  --enter: clamp(0, calc(var(--local) / 0.22), 1);
-  --exit: clamp(0, calc((var(--local) - 0.86) / 0.26), 1);
+  --enter: clamp(0, calc(var(--local) / 0.16), 1);
+  /* Ends exactly at local 1, which is the instant the next move begins its own
+     enter. Any overlap at all superimposes two words this size on one another
+     and neither is readable; a brief empty beat between them is a beat, which
+     is what the black ground is for. */
+  --exit: clamp(0, calc((var(--local) - 0.84) / 0.16), 1);
   display: grid;
   align-content: center;
-  justify-items: start;
+  justify-items: center;
   gap: clamp(14px, 2.2vh, 26px);
+  text-align: center;
   /* Four words this size, stacked in one place, cannot cross-dissolve through
      each other at 40% and stay readable — the outgoing stage has to be gone
      before the incoming one is legible, so the fade is squared and the two
@@ -1243,16 +1296,16 @@ main,
 .stage__name {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: clamp(2.4rem, min(9vw, 13vh), 8.5rem);
-  line-height: 0.88;
-  letter-spacing: -0.042em;
+  font-size: clamp(3.1rem, min(11vw, 17vh), 11rem);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
 }
 
 .stage__body {
-  max-width: 34ch;
+  max-width: 42ch;
   font-size: var(--t-lead);
   color: var(--ink-soft);
-  text-wrap: pretty;
+  text-wrap: balance;
 }
 
 .process__meter {
@@ -1295,10 +1348,16 @@ main,
 
 /* --- About --------------------------------------------------------------- */
 
+/* Two columns that both run the full height of the chapter: who we are on the
+   left — the title, then the two of us under it — and the story beside it.
+   The people used to sit in a full-width row of their own below both columns,
+   which left the space under the title empty and gave each person a 700px cell
+   to hold 330px of text. */
 .about {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(36px, 6vh, 84px) clamp(24px, 3vw, 64px);
+  gap: clamp(30px, 5vh, 64px) clamp(24px, 3vw, 64px);
+  align-items: start;
   max-width: var(--shell);
   margin: 0 auto;
   padding: var(--bay) var(--gutter);
@@ -1321,6 +1380,7 @@ main,
 
 .about__story {
   grid-column: 7 / -1;
+  grid-row: 1 / span 2;
   display: grid;
   gap: 1.1em;
   max-width: 52ch;
@@ -1330,11 +1390,10 @@ main,
 }
 
 .people {
-  grid-column: 1 / -1;
+  grid-column: 1 / 6;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(24px, 4vw, 72px);
-  margin: clamp(8px, 2vh, 32px) 0 0;
+  gap: clamp(20px, 3vh, 34px);
+  margin: clamp(4px, 1.5vh, 18px) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -1676,6 +1735,7 @@ main,
 @media (max-width: 1000px) {
   .about__head,
   .about__story,
+  .people,
   .contact__intro,
   .contact__form {
     grid-column: 1 / -1;
@@ -1686,7 +1746,14 @@ main,
   }
 
   .about__story {
+    grid-row: auto;
     max-width: none;
+  }
+
+  /* Stacked, the two of us read better side by side again. */
+  .people {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(24px, 4vw, 48px);
   }
 }
 
@@ -1700,6 +1767,12 @@ main,
     order: 3;
   }
 
+  /* With the links hidden, space-between strands the CTA in the middle of the
+     bar. Push it over so the two controls sit together on the right. */
+  .nav__cta {
+    margin-left: auto;
+  }
+
   .nav[data-open='true'] .nav__panel {
     display: block;
   }
@@ -1709,18 +1782,48 @@ main,
     max-width: 60ch;
   }
 
-  /* The dolly still reads on a phone, but side by side there is no room for
-     both the copy and the panel, so the plane stacks and the panel takes the
-     full column. Nothing is dropped — the sequence is simply narrower. */
+  /* The dolly is a wide-screen move. A plane holds a label, a title, a
+     paragraph, four details and a panel — on a phone that is about 600px of
+     content trying to live inside a 400px row, and the panel was being clipped
+     off the bottom of every one of them. So the chapter un-pins here: the three
+     depths become three blocks you scroll through. Nothing is dropped, nothing
+     is cut off, and the process morph further down is still the cinematic beat.
+     The readout keeps working — it is driven by scroll position, not by the
+     pin. */
+  .depth {
+    height: auto;
+  }
+
   .depth__stage {
-    grid-template-rows: auto 1fr auto;
+    position: static;
+    height: auto;
+    grid-template-rows: auto auto auto auto;
+    padding-block: var(--bay) clamp(40px, 7vh, 80px);
+  }
+
+  .depth__head {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .depth__field {
+    overflow: visible;
+    padding-block: 0;
+  }
+
+  .planes {
+    gap: clamp(52px, 9vh, 96px);
   }
 
   .plane {
+    grid-area: auto;
     grid-template-columns: minmax(0, 1fr);
     gap: clamp(18px, 3vh, 28px);
     align-content: center;
+    opacity: 1;
+    transform: none;
   }
+
 
   .plane__body {
     max-width: 46ch;
@@ -1729,6 +1832,10 @@ main,
   .plane__frag {
     justify-self: stretch;
     transform: none;
+  }
+
+  .frag {
+    min-height: 0;
   }
 
   .frag--ui {
@@ -1872,6 +1979,14 @@ main,
     display: none;
   }
 
+  /* The handoff lifts this chapter up under the hero so the statement climbs
+     while the headline dissolves. That only works because the hero is pinned
+     and fading; with nothing pinned the two chapters simply print on top of
+     each other. */
+  .philosophy {
+    margin-top: 0;
+  }
+
   .depth__stage,
   .process__stage {
     padding-block: var(--bay);
@@ -1906,6 +2021,12 @@ main,
 
   .process__stages {
     gap: clamp(36px, 6vh, 72px);
+  }
+
+  /* The scrim protects one centred word from the line passing behind it. With
+     the moves stacked and the line static there is nothing to protect. */
+  .process__stages::before {
+    display: none;
   }
 
   .stage {
