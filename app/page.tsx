@@ -25,6 +25,33 @@ function Mark({ n, label }: { n: string; label: string }) {
   )
 }
 
+/**
+ * Renders a headline line, binding the signal dot to the final word so the two
+ * can never be split across a break.
+ *
+ * A word joiner between them was not enough: against an `inline-block` the
+ * break opportunity survives it, and on a 390px screen the dot ended up alone
+ * on its own line at the left margin, 53px under the word it belongs to.
+ * Holding the last word and the dot in one `nowrap` span moves them together
+ * instead — the line wraps a word earlier, which is what it should have done.
+ */
+function Line({ text, dot }: { text: string; dot?: boolean }) {
+  if (!dot) return <>{text}</>
+  const words = text.split(' ')
+  const last = words.pop() ?? ''
+  const head = words.join(' ')
+  return (
+    <>
+      {head}
+      {head && ' '}
+      <span className="keep">
+        {last}
+        <i className="dot" aria-hidden="true" />
+      </span>
+    </>
+  )
+}
+
 /** Splits a sentence so each word can be lit as the scroll passes through it. */
 function Sweep({ text, id }: { text: string; id?: string }) {
   const words = text.split(' ')
@@ -134,16 +161,9 @@ export default function Home() {
                 {site.hero.headline.map((line, i) => (
                   <span className="hero__line" key={line} style={vars({ '--d': `${0.1 + i * 0.08}s` })}>
                     <span className="hero__line-in">
-                      {line}
+                      <Line text={line} dot={i === site.hero.headline.length - 1} />
                       {/* Keeps the lines from running together in the accessible name. */}
                       {i < site.hero.headline.length - 1 && ' '}
-                      {/* Word joiner keeps the signal dot from ever starting a line. */}
-                      {i === site.hero.headline.length - 1 && (
-                        <>
-                          {'⁠'}
-                          <i className="dot" aria-hidden="true" />
-                        </>
-                      )}
                     </span>
                   </span>
                 ))}
@@ -346,14 +366,8 @@ export default function Home() {
             <h2 id="contact-h" className="contact__title" data-reveal>
               {site.contact.title.map((line, i) => (
                 <span className="contact__line" key={line}>
-                  {line}
+                  <Line text={line} dot={i === site.contact.title.length - 1} />
                   {i < site.contact.title.length - 1 && ' '}
-                  {i === site.contact.title.length - 1 && (
-                    <>
-                      {'⁠'}
-                      <i className="dot" aria-hidden="true" />
-                    </>
-                  )}
                 </span>
               ))}
             </h2>

@@ -229,8 +229,15 @@ That is what lets the four moves gain weight as they arrive — each one comes i
 at 520 and firms up to 900 across its entrance, so a move does not merely appear,
 it sets. The opening headline does the same on load.
 
-A heavier weight is a wider glyph, so this is only ever applied where a width
-change cannot re-wrap anything: a single centred word in its own grid cell, and
+Nohemi at 900 is drawn tightly fitted — its `i` and `l` are plain stems with
+barely any sidebearing — so negative tracking on top of it does not tighten the
+setting, it closes the gaps. At -0.045em and 153px the word "Build" fused into a
+single unreadable block. Three ceilings hold the heavy weights open:
+`--track-move` (one word, up to 176px), `--track-hero` and `--track-display`.
+The lighter weights have open counters and keep their own tighter values.
+
+A heavier weight is a wider glyph, so the weight sweep is only ever applied
+where a width change cannot re-wrap anything: a single centred word in its own grid cell, and
 a headline whose final state is its heaviest and therefore already fits. The
 philosophy statement is deliberately left as an opacity ramp — sweeping weight
 across a four-line paragraph would re-flow it mid-scroll.

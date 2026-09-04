@@ -55,6 +55,17 @@
   --t-body: clamp(1rem, 1.05vw, 1.125rem);
   --t-micro: 0.75rem;
 
+  /* Nohemi at 900 is drawn tightly fitted already — its `i` and `l` are plain
+     stems with barely any sidebearing. Negative tracking on top of that does
+     not tighten the setting, it closes the gaps: at -0.045em and 153px, the
+     word "Build" fused into a single block. These are the ceilings that keep
+     the heavy weights legible. Lighter weights have open counters and are
+     tracked on their own values. */
+  --track-display: -0.018em;
+  --track-hero: -0.014em;
+  /* One word, on its own, at up to 176px. Effectively normal. */
+  --track-move: -0.004em;
+
   --gutter: clamp(20px, 5vw, 96px);
   --bay: clamp(96px, 15vh, 200px);
   --shell: 1500px;
@@ -284,6 +295,12 @@ main,
   height: 1px;
   background: currentColor;
   opacity: 0.5;
+}
+
+/* Holds a headline's last word and its signal dot together, so a break can
+   never land between them. */
+.keep {
+  white-space: nowrap;
 }
 
 /* The signal dot from the wordmark, reused as punctuation. */
@@ -674,7 +691,9 @@ main,
   animation-delay: 0.1s;
   font-size: var(--t-hero);
   line-height: 0.9;
-  letter-spacing: calc(-0.038em - var(--p, 0) * 0.008em);
+  /* Still tightens fractionally as it leaves, just from a legible resting
+     value rather than into an illegible one. */
+  letter-spacing: calc(var(--track-hero) - var(--p, 0) * 0.004em);
 }
 
 /* The clip box is grown by padding and pulled back by margin, so descenders
@@ -892,7 +911,7 @@ main,
   font-weight: 900;
   font-size: var(--t-title);
   line-height: 1.02;
-  letter-spacing: -0.032em;
+  letter-spacing: var(--track-display);
 }
 
 .depth__sub {
@@ -994,7 +1013,7 @@ main,
   font-weight: 900;
   font-size: clamp(1.5rem, min(3.4vw, 5.4vh), 2.9rem);
   line-height: 1.02;
-  letter-spacing: -0.032em;
+  letter-spacing: var(--track-display);
 }
 
 .plane__body {
@@ -1400,7 +1419,7 @@ main,
   font-weight: 900;
   font-size: clamp(3.1rem, min(11vw, 17vh), 11rem);
   line-height: 0.86;
-  letter-spacing: -0.045em;
+  letter-spacing: var(--track-move);
   /* Arrives at 520 and firms up to 900 across the entrance, then stays there
      for the whole hold. The move does not just appear — it sets. */
   font-variation-settings: 'wght' calc(520 + 380 * var(--enter, 1));
@@ -1480,7 +1499,7 @@ main,
   font-weight: 900;
   font-size: var(--t-title);
   line-height: 1.02;
-  letter-spacing: -0.032em;
+  letter-spacing: var(--track-display);
 }
 
 .about__story {
@@ -1517,7 +1536,7 @@ main,
   font-weight: 900;
   font-size: clamp(1.5rem, 2.6vw, 2.2rem);
   line-height: 1;
-  letter-spacing: -0.032em;
+  letter-spacing: var(--track-display);
 }
 
 .person__role {
@@ -1575,7 +1594,7 @@ main,
   font-weight: 900;
   font-size: clamp(1.9rem, 3.6vw, 3.2rem);
   line-height: 0.96;
-  letter-spacing: -0.035em;
+  letter-spacing: var(--track-display);
 }
 
 .contact__line {
@@ -1815,7 +1834,7 @@ main,
   font-family: var(--font-display);
   font-weight: 900;
   font-size: clamp(1.6rem, 3vw, 2.4rem);
-  letter-spacing: -0.032em;
+  letter-spacing: var(--track-display);
   animation: fadeUp 0.6s var(--ease-out) both;
   animation-delay: 0.1s;
 }
