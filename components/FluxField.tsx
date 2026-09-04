@@ -96,10 +96,18 @@ const SCENES: Record<SceneName, Keyframe[]> = {
     [0, { y: 0.5, amp: 0.028, freq: 0.4, noise: 0.02, spread: 0.2, alpha: 0.3, pointer: 0.2 }],
     [1, { y: 0.5, amp: 0.025, freq: 0.35, noise: 0.02, spread: 0.14, alpha: 0.28, pointer: 0.2 }],
   ],
-  // The dot has already landed on the headline, so the line just settles.
+  // The closing beat. The dot has already landed on the headline, so instead of
+  // resolving again the three strands draw together into one taut line and a
+  // request runs out along it — the page's last motion is something leaving,
+  // which is what the form beneath it is for.
+  //
+  // This chapter is the last one, so its progress never reaches 1: the scroll
+  // runs out around 0.6. The beat has to be complete by the midpoint or nobody
+  // ever sees it.
   contact: [
     [0, { y: 0.9, amp: 0.03, freq: 0.5, noise: 0.03, spread: 0.14, alpha: 0.32, pointer: 0.3 }],
-    [1, { y: 0.92, amp: 0.012, freq: 0.4, noise: 0.01, spread: 0.06, alpha: 0.28, pointer: 0.15 }],
+    [0.5, { y: 0.91, amp: 0.018, freq: 0.45, noise: 0.015, spread: 0.05, alpha: 0.4, pulse: 1, pointer: 0.2 }],
+    [1, { y: 0.92, amp: 0.012, freq: 0.4, noise: 0.01, spread: 0.03, alpha: 0.42, pulse: 1, pointer: 0.15 }],
   ],
 }
 
@@ -291,7 +299,7 @@ export default function FluxField() {
           Math.sin(u * TAU * current.freq * 2.3 + 1.53 - time * 0.21) * ampPx * 0.28
         const fade = Math.sin(u * Math.PI)
         ctx.beginPath()
-        ctx.arc(x, y, 3.5, 0, TAU)
+        ctx.arc(x, y, 3.5 + current.pulse * 1.6, 0, TAU)
         ctx.fillStyle = `rgba(${RED[0]},${RED[1]},${RED[2]},${current.pulse * fade})`
         ctx.fill()
       }

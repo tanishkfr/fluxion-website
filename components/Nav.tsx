@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
-import { site } from '@/content/site'
+import { nav as chapters, site } from '@/content/site'
 import { onFrame, onStuck, type SceneName } from '@/lib/flux'
 
 /** Nav href → the scene the engine reports while that chapter owns the screen. */
@@ -60,7 +60,7 @@ export default function Nav() {
     }
   }, [open])
 
-  const links = site.nav.map((item) => ({
+  const links = chapters.map((item) => ({
     ...item,
     current: SCENE_FOR[item.href] === scene,
   }))
@@ -92,6 +92,9 @@ export default function Nav() {
       <nav className="nav__links" aria-label="Page sections">
         {links.map((item) => (
           <a key={item.href} href={item.href} aria-current={item.current ? 'true' : undefined}>
+            <span className="nav__n" aria-hidden="true">
+              {item.mark}
+            </span>
             {item.label}
             <span className="nav__mark" aria-hidden="true" />
           </a>
@@ -126,6 +129,9 @@ export default function Nav() {
                 aria-current={item.current ? 'true' : undefined}
                 onClick={() => setOpen(false)}
               >
+                <span className="nav__n" aria-hidden="true">
+                  {item.mark}
+                </span>
                 {item.label}
               </a>
             </li>

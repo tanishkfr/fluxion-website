@@ -487,6 +487,14 @@ main,
 
 /* The labels were 13px tall and that was the whole target. Padding takes each
    one to a 44px row without changing the type size. */
+/* The chapter index, so the nav reads as this page's table of contents and
+   each link names its destination exactly what that chapter calls itself. */
+.nav__n {
+  margin-right: 0.55em;
+  color: var(--red);
+  font-variant-numeric: tabular-nums;
+}
+
 .nav__links a {
   position: relative;
   display: inline-flex;
@@ -1106,6 +1114,97 @@ main,
   overflow-x: auto;
 }
 
+.frag--type {
+  display: grid;
+  align-content: start;
+  gap: clamp(14px, 2vh, 22px);
+}
+
+.frag__barlabel {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+
+.specimen {
+  display: grid;
+  gap: clamp(10px, 1.6vh, 16px);
+  margin: 0;
+}
+
+.specimen__row {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(14px, 2vw, 24px);
+}
+
+/* Set in the face it is naming — the panel is the specimen, not a picture of
+   one. */
+.specimen__aa {
+  min-width: 2.4ch;
+  line-height: 0.9;
+  color: var(--ink);
+}
+
+.specimen__aa--display {
+  font: 900 clamp(1.5rem, 2.6vw, 2.1rem) / 0.9 var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.specimen__aa--label {
+  font: 500 clamp(1.15rem, 1.9vw, 1.5rem) / 0.9 var(--font-display);
+}
+
+.specimen__aa--body {
+  font: 400 clamp(1rem, 1.5vw, 1.25rem) / 0.9 var(--font-body);
+}
+
+.specimen__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em 0.9em;
+  margin: 0;
+}
+
+.specimen__font {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+.specimen__use {
+  font: 500 var(--t-micro) / 1 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.specimen__notes {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-top: clamp(10px, 1.6vh, 16px);
+  border-top: 1px solid var(--rule-soft);
+  list-style: none;
+}
+
+.specimen__notes li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5em;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+
+.specimen__notes li span:last-child {
+  color: var(--ink-soft);
+}
+
 .frag__bar {
   display: flex;
   align-items: center;
@@ -1488,6 +1587,37 @@ main,
   grid-column: 7 / -1;
 }
 
+/* Sits with the invitation, which is sticky on wide screens — so the two facts
+   that decide whether someone sends anything stay on screen the whole time they
+   are filling the form in. */
+.expect {
+  display: grid;
+  gap: 10px;
+  margin: clamp(4px, 1.5vh, 14px) 0 0;
+  padding-top: clamp(16px, 2.4vh, 24px);
+  border-top: 1px solid var(--rule);
+}
+
+.expect__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4em 1em;
+}
+
+.expect dt {
+  min-width: 9ch;
+  font: 500 var(--t-micro) / 1.4 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.expect dd {
+  margin: 0;
+  color: var(--ink);
+}
+
 /* --- Form ---------------------------------------------------------------- */
 
 .form {
@@ -1627,6 +1757,14 @@ main,
 
 .form__summary a {
   color: var(--red);
+}
+
+/* The page's terminal action, and the only button set larger than the rest.
+   The story peaks at the signal dot in chapter 03; without this the last thing
+   it asks you to do is also the quietest thing on the screen. */
+.form__foot .btn--solid {
+  padding: 1.15em 2.2em;
+  font-size: 1.0625rem;
 }
 
 .form__foot {
@@ -1878,6 +2016,13 @@ main,
   .people,
   .form__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* One row fits its value inline at this width and the other does not, which
+     leaves the pair reading as two different things. Stack both. */
+  .expect__row {
+    display: grid;
+    gap: 2px;
   }
 
   .footer {

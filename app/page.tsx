@@ -68,20 +68,36 @@ function Brandmark({ className = '' }: { className?: string }) {
  * data behind it, and the route that carries it.
  */
 const FRAGMENTS: ReactNode[] = [
-  <div className="frag frag--ui" key="ui" aria-hidden="true">
+  /*
+    A specimen of this page's own type, set in the faces it is describing, with
+    the real focus and motion values underneath. It used to be abstract grey
+    bars — the only one of the three panels claiming nothing, sitting next to
+    two that show the real schema and the real route.
+  */
+  <div className="frag frag--type" key="ui" aria-hidden="true">
     <div className="frag__bar">
       <span className="frag__dot" />
-      <span className="frag__pill" />
-      <span className="frag__pill frag__pill--sm" />
+      <span className="frag__barlabel">interface</span>
     </div>
-    <div className="frag__body">
-      <div className="frag__h" />
-      <div className="frag__h frag__h--sm" />
-      <div className="frag__line" />
-      <div className="frag__line" />
-      <div className="frag__line frag__line--short" />
-      <div className="frag__btn">Start a project</div>
-    </div>
+    <dl className="specimen">
+      {site.depth.specimen.rows.map((row) => (
+        <div className="specimen__row" key={row.face}>
+          <dt className={`specimen__aa specimen__aa--${row.face}`}>Aa</dt>
+          <dd className="specimen__meta">
+            <span className="specimen__font">{row.font}</span>
+            <span className="specimen__use">{row.use}</span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+    <ul className="specimen__notes">
+      {site.depth.specimen.notes.map((note) => (
+        <li key={note.label}>
+          <span>{note.label}</span>
+          <span>{note.value}</span>
+        </li>
+      ))}
+    </ul>
   </div>,
   <pre className="frag frag--code" key="data" aria-hidden="true">{`enquiry {
   name       string   required
@@ -344,6 +360,15 @@ export default function Home() {
             <p className="contact__body" data-reveal style={vars({ '--d': '0.1s' })}>
               {site.contact.body}
             </p>
+            {/* Answered before the form, not in the success state after it. */}
+            <dl className="expect" data-reveal style={vars({ '--d': '0.18s' })}>
+              {site.contact.form.expect.map((item) => (
+                <div className="expect__row" key={item.label}>
+                  <dt>{item.label}</dt>
+                  <dd>{item.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
           <div className="contact__form">
             <ContactForm />

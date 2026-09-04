@@ -158,6 +158,17 @@ used by the navigation, the scroll engine and server-side validation, so rename
 those with a little care. If you add or remove a `need` option, the server
 validates against the same list automatically.
 
+**The nav is derived, not written.** `nav` is built from each chapter's own
+`mark` and `marker`, so a link and the chapter it points at can never disagree.
+They were separate lists once and had drifted: "What we build" led to a chapter
+headed "02 — Surface & system", and three of the four links named their
+destination something other than what it called itself. Rename a chapter's
+`marker` and the nav follows.
+
+`contact.form.expect` and `depth.specimen` are facts about this studio and this
+stylesheet — reply time, project length, the type scale, the focus ring. Keep
+them true; they are on the page precisely because they are checkable.
+
 ---
 
 ## Structure
@@ -215,6 +226,14 @@ composition, and the frame is used:
 | 03 Four moves | **Centred.** The only symmetrical chapter, so the change of rhythm reads as deliberate |
 | 04 The two of us | Two full-height columns: the title and the two of us on the left, the story beside them |
 | 05 Start here | Split: the invitation left, the form right |
+
+The last chapter also carries the closing beat. The signal dot has already
+landed in 03, so instead of resolving a second time the three strands draw
+together into one taut line and a request runs out along it — the page's final
+motion is something leaving, which is what the form beneath it is for. The
+submit button is the one control set larger than the rest: the story peaks at
+the dot, and without that the last thing the page asks you to do would also be
+the quietest thing on the screen.
 
 The centred chapter needs its own protection from the flux line. The line's
 alpha ramp keeps it clear of type set on the left, which does nothing for type

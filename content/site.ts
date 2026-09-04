@@ -33,13 +33,6 @@ export const site = {
     ],
   },
 
-  /** Kept plain and scannable: the nav is wayfinding, not narrative. */
-  nav: [
-    { label: 'Our thinking', href: '#philosophy' },
-    { label: 'What we build', href: '#depth' },
-    { label: 'How we work', href: '#process' },
-    { label: 'The two of us', href: '#about' },
-  ],
 
   hero: {
     eyebrow: 'Fluxion Studios — Web design & development',
@@ -98,6 +91,22 @@ export const site = {
         detail: ['auth', 'dashboards', 'admin views', 'integrations'],
       },
     ],
+    /**
+     * Real values from this page's own stylesheet. The other two fragments show
+     * the real schema and the real route; this one used to be abstract grey
+     * bars, which made it the only panel of the three claiming nothing.
+     */
+    specimen: {
+      rows: [
+        { face: 'display', font: 'Nohemi 900', use: 'Headlines' },
+        { face: 'label', font: 'Nohemi 500', use: 'Labels' },
+        { face: 'body', font: 'Inter 400', use: 'Body copy' },
+      ],
+      notes: [
+        { label: 'focus', value: '2px / offset 3px' },
+        { label: 'motion', value: '160ms crisp · 900ms slow' },
+      ],
+    },
     /**
      * The fragments rendered alongside these layers describe this site's own
      * contact endpoint, so nothing here is invented. Keep them true if the
@@ -199,6 +208,16 @@ export const site = {
             'What the business does, what you want the site to do, and anything that is bugging you about the current one.',
         },
       },
+      /**
+       * Stated beside the form, not only in the success state. "Will they even
+       * reply, and how long is this going to take" is the hesitation that stops
+       * a small business sending anything at all — answering it after they have
+       * already taken the risk is answering it too late.
+       */
+      expect: [
+        { label: 'We reply in', value: '24–36 hours' },
+        { label: 'Projects run', value: '3–6 weeks, depending on scope' },
+      ],
       success: {
         title: 'Got it.',
         body: 'Your message is with us. We usually reply within a couple of days — if it is urgent, email us directly.',
@@ -219,5 +238,19 @@ export const site = {
     ],
   },
 } as const
+
+/**
+ * The nav is built from the chapter marks rather than kept as its own list.
+ * They used to be maintained separately and had drifted: "What we build" led to
+ * a chapter headed "02 — Surface & system", and three of the four links named
+ * their destination something other than what it called itself. Derived, they
+ * cannot disagree again.
+ */
+export const nav = [
+  { href: '#philosophy', mark: site.philosophy.mark, label: site.philosophy.marker },
+  { href: '#depth', mark: site.depth.mark, label: site.depth.marker },
+  { href: '#process', mark: site.process.mark, label: site.process.marker },
+  { href: '#about', mark: site.about.mark, label: site.about.marker },
+] as const
 
 export type Site = typeof site
