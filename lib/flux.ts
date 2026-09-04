@@ -40,6 +40,11 @@ export interface FluxState {
   reduced: boolean
   /** True once the page has scrolled past the masthead threshold. */
   stuck: boolean
+  /**
+   * How hard the page is being scrolled, 0 to 1, smoothed and decaying.
+   * The flux line is named after flow rate; this is what it flows with.
+   */
+  scrollVel: number
 }
 
 interface Track {
@@ -78,6 +83,7 @@ const state: FluxState = {
   pointerActive: false,
   reduced: false,
   stuck: false,
+  scrollVel: 0,
 }
 
 const subscribers = new Set<(s: FluxState) => void>()
@@ -151,10 +157,16 @@ function tick(now: number): void {
   const scrollY = window.scrollY
   const vh = state.vh
 
-  if (scrollY !== lastScrollY) {
+  const delta = scrollY - lastScrollY
+  if (delta !== 0) {
     lastScrollY = scrollY
     lastInputAt = now
   }
+  // Eased both ways so a flick ramps up rather than snapping, and the line
+  // keeps coasting for a moment after the scroll stops.
+  const impulse = Math.min(1, Math.abs(delta) / 90)
+  state.scrollVel += (impulse - state.scrollVel) * (impulse > state.scrollVel ? 0.35 : 0.06)
+  if (state.scrollVel < 0.002) state.scrollVel = 0
 
   // Once nothing has moved for a beat, keep drawing the drift at half rate.
   const active = now - lastInputAt < ACTIVE_MS

@@ -9,26 +9,16 @@
 
 /* --- Nohemi -------------------------------------------------------------- */
 
+/* One variable face instead of three static weights. Subset to the Latin range
+   the site actually sets, it is 31KB against 65KB for the three files it
+   replaces — and it makes every weight between 100 and 900 available, which is
+   what lets the four moves gain weight as they arrive. */
 @font-face {
   font-family: 'Nohemi';
-  src: url('/fonts/Nohemi-Light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Nohemi';
-  src: url('/fonts/Nohemi-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Nohemi';
-  src: url('/fonts/Nohemi-Black.woff2') format('woff2');
-  font-weight: 900;
+  src:
+    url('/fonts/Nohemi-VF.woff2') format('woff2') tech(variations),
+    url('/fonts/Nohemi-VF.woff2') format('woff2-variations');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -680,6 +670,8 @@ main,
 .hero__title {
   font-family: var(--font-display);
   font-weight: 900;
+  animation: weightIn 1.1s var(--ease-out) both;
+  animation-delay: 0.1s;
   font-size: var(--t-hero);
   line-height: 0.9;
   letter-spacing: calc(-0.038em - var(--p, 0) * 0.008em);
@@ -755,6 +747,17 @@ main,
 @keyframes rise {
   to {
     transform: translateY(0);
+  }
+}
+
+/* The headline sets as it arrives. Only ever lighter than its resting weight,
+   so it can never be wider than the state that already fits the measure. */
+@keyframes weightIn {
+  from {
+    font-variation-settings: 'wght' 560;
+  }
+  to {
+    font-variation-settings: 'wght' 900;
   }
 }
 
@@ -1398,6 +1401,9 @@ main,
   font-size: clamp(3.1rem, min(11vw, 17vh), 11rem);
   line-height: 0.86;
   letter-spacing: -0.045em;
+  /* Arrives at 520 and firms up to 900 across the entrance, then stays there
+     for the whole hold. The move does not just appear — it sets. */
+  font-variation-settings: 'wght' calc(520 + 380 * var(--enter, 1));
 }
 
 .stage__body {
@@ -1779,7 +1785,11 @@ main,
   color: var(--ink-faint);
 }
 
+/* The form resolves rather than being swapped out. The panel rises into the
+   space the form just left and its lines arrive in order, so sending reads as
+   a conclusion instead of a jump cut. */
 .form-done {
+  animation: fadeUp 0.7s var(--ease-out) both;
   display: grid;
   justify-items: start;
   gap: 15px;
@@ -1798,6 +1808,7 @@ main,
   background: var(--red);
   border-radius: 50%;
   animation: pop 0.5s var(--ease-out) both;
+  animation-delay: 0.24s;
 }
 
 .form-done__title {
@@ -1805,15 +1816,21 @@ main,
   font-weight: 900;
   font-size: clamp(1.6rem, 3vw, 2.4rem);
   letter-spacing: -0.032em;
+  animation: fadeUp 0.6s var(--ease-out) both;
+  animation-delay: 0.1s;
 }
 
 .form-done__body {
   max-width: 44ch;
   color: var(--ink-soft);
+  animation: fadeUp 0.6s var(--ease-out) both;
+  animation-delay: 0.18s;
 }
 
 .form-done .btn {
   margin-top: 8px;
+  animation: fadeUp 0.6s var(--ease-out) both;
+  animation-delay: 0.28s;
 }
 
 /* --- Footer -------------------------------------------------------------- */
@@ -2183,6 +2200,10 @@ main,
 
   .stage__name {
     font-size: clamp(2rem, 5vw, 4rem);
+    /* Stacked and all on screen at once, the four moves are peers — they must
+       not each land on a different weight because of where the scroll happens
+       to be. */
+    font-variation-settings: 'wght' 900;
   }
 
   .sweep__w {

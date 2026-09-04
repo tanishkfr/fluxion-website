@@ -56,6 +56,14 @@ it underlines whichever chapter currently owns the screen.
 Next.js 16 (App Router) + React 19 + TypeScript. **Zero UI or animation
 dependencies** — no Tailwind, no GSAP, no Framer Motion, no email SDK.
 
+- **The line is a string, not a drawing of one.** Every point carries a
+  displacement and a velocity; a spring pulls it back to rest, damping settles
+  it, and tension couples it to its neighbours so a deflection travels along the
+  line instead of denting it in one place. Near the cursor it is drawn toward
+  it — capped, and with a radial falloff, so it bends rather than sticks and a
+  pointer up in the masthead does not bend the far end of the line. How hard the
+  page is being scrolled feeds the same field: flick through a chapter and it
+  agitates, stop and it settles. The studio is named after flow rate.
 - Motion is one `requestAnimationFrame` loop (`lib/flux.ts`) that writes a
   single custom property `--p` (0→1) per section. All the movement is CSS
   reading that variable, so scrolling never triggers layout reads. The loop
@@ -208,6 +216,24 @@ variants swap at identical dimensions. The originals are kept alongside them.
 Buttons set their label in Just Black on Fluxion Red. Cornsilk on red is only
 3.9:1, under AA at button sizes; black on red is 5:1, and it is the brand's own
 pairing — the supplied red lockup sets "Studios" and the dot in black.
+
+---
+
+## Type
+
+One variable Nohemi face, subset to the Latin range the site actually sets:
+**31KB against 65KB for the three static weights it replaces**, and every weight
+between 100 and 900 available in between.
+
+That is what lets the four moves gain weight as they arrive — each one comes in
+at 520 and firms up to 900 across its entrance, so a move does not merely appear,
+it sets. The opening headline does the same on load.
+
+A heavier weight is a wider glyph, so this is only ever applied where a width
+change cannot re-wrap anything: a single centred word in its own grid cell, and
+a headline whose final state is its heaviest and therefore already fits. The
+philosophy statement is deliberately left as an opacity ramp — sweeping weight
+across a four-line paragraph would re-flow it mid-scroll.
 
 ---
 

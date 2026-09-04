@@ -91,14 +91,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <link
           rel="preload"
-          href="/fonts/Nohemi-Black.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/Nohemi-Medium.woff2"
+          href="/fonts/Nohemi-VF.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
@@ -121,7 +114,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             .depth__meter,.process__meter{display:none}
             .process__stages{gap:clamp(36px,6vh,72px)}
             .stage{grid-area:auto!important;opacity:1!important;transform:none!important}
-            .stage__name{font-size:clamp(2rem,5vw,4rem)}
+            .stage__name{font-size:clamp(2rem,5vw,4rem);font-variation-settings:'wght' 900}
             .sweep__w{opacity:1!important}
             .nav__toggle{display:none!important}
           `}</style>

@@ -164,6 +164,32 @@ export default function FluxField() {
 
     // Eased copies of the target parameters, so chapter changes glide.
     const current: Params = { ...resolve('hero', 0) }
+
+    /*
+      The line is a string, not a drawing of one.
+
+      Each point carries a displacement from the curve the parameters describe,
+      and a velocity. Three forces act on it every frame: a spring pulling it
+      back to rest, damping so it settles instead of ringing forever, and
+      tension coupling it to its neighbours — which is what makes a deflection
+      travel along the line rather than denting it in one place.
+
+      The pointer adds a fourth. Near the cursor the line is drawn toward it,
+      capped so it bends rather than sticks. Move across it and it plucks:
+      deflects, overshoots, comes back.
+    */
+    let disp = new Float32Array(0)
+    let vel = new Float32Array(0)
+    let lastTime = 0
+    // Steady-state deflection is target * PULL / (SPRING + PULL), so the spring
+    // has to be soft relative to the pull or the line barely acknowledges the
+    // cursor. At 18 and 42 it commits to about seventy percent of the reach.
+    // DAMP is deliberately under critical (2 * sqrt(SPRING + PULL) ≈ 15) so a
+    // fast pluck overshoots once and rings back instead of gliding home.
+    const SPRING = 18
+    const DAMP = 9
+    const TENSION = 60
+    const PULL = 42
     let toneMix = document.documentElement.dataset.tone === 'light' ? 1 : 0
     let width = 0
     let height = 0
@@ -207,10 +233,9 @@ export default function FluxField() {
       toneMix = s.reduced ? toneTarget : lerp(toneMix, toneTarget, 0.06)
 
       const time = s.reduced ? 0 : s.time
-      const p = s.reduced ? 0 : current.pointer
       if (s.pointerActive && !s.reduced) {
-        pointerX = lerp(pointerX, s.pointerX, 0.07)
-        pointerY = lerp(pointerY, s.pointerY, 0.07)
+        pointerX = lerp(pointerX, s.pointerX, 0.16)
+        pointerY = lerp(pointerY, s.pointerY, 0.16)
       } else {
         pointerX = lerp(pointerX, 0, 0.05)
         pointerY = lerp(pointerY, 0, 0.05)
@@ -238,10 +263,59 @@ export default function FluxField() {
         lerp(CORNSILK[2], INK_DARK[2], toneMix) | 0,
       ]
 
+      // How hard the page is being scrolled feeds straight into the line:
+      // flick through a chapter and it agitates, stop and it settles. The
+      // studio is named after flow rate.
+      const agitate = s.reduced ? 0 : s.scrollVel
+      const waveAmp = ampPx * (1 + agitate * 0.28)
+      const noiseAmt = noise * (1 + agitate * 1.4)
+
+      if (!s.reduced) {
+        if (disp.length !== points + 1) {
+          disp = new Float32Array(points + 1)
+          vel = new Float32Array(points + 1)
+        }
+        const dt = Math.min(0.022, Math.max(0.001, s.time - lastTime))
+        lastTime = s.time
+        const pull = current.pointer
+        const pointerPy = ((pointerY + 1) / 2) * height
+        // Bend, do not stick: the cursor can pull the line a tenth of the
+        // viewport out of true and no further.
+        const cap = height * 0.12
+        const reachY = height * 0.22
+        const raw = pointerPy - baseY
+        const target = raw < -cap ? -cap : raw > cap ? cap : raw
+        const live = s.pointerActive && pull > 0.001
+
+        for (let i = 0; i <= points; i += 1) {
+          const left = i > 0 ? disp[i - 1]! : disp[i]!
+          const right = i < points ? disp[i + 1]! : disp[i]!
+          const d0 = disp[i]!
+          let force = -SPRING * d0 - DAMP * vel[i]! + TENSION * (left + right - 2 * d0)
+
+          if (live) {
+            // Radial, not just horizontal. With a falloff in x alone the line
+            // reaches for a cursor sitting up in the masthead, and tension then
+            // carries that kink along the whole string — the far end of the
+            // line bending because the pointer is parked in a corner.
+            const dx = ((i / points) * width - pointerPx) / reach
+            const dy = (baseY + d0 - pointerPy) / reachY
+            const r2 = dx * dx + dy * dy
+            if (r2 < 1) {
+              const f = (1 - r2) ** 2
+              force += (target * f - d0) * PULL * pull
+            }
+          }
+
+          vel[i]! += force * dt
+          disp[i]! += vel[i]! * dt
+        }
+      }
+
       ctx.clearRect(0, 0, width, height)
 
       for (let strand = 0; strand < 3; strand += 1) {
-        const offset = (strand - 1) * spread * ampPx * 0.9
+        const offset = (strand - 1) * spread * waveAmp * 0.9
         const phase = strand * 0.9
         const isCore = strand === 1
 
@@ -250,20 +324,16 @@ export default function FluxField() {
           const u = i / points
           let x = u * width
           let y = baseY + offset
-          y += Math.sin(u * TAU * current.freq + phase + time * 0.32) * ampPx
-          y += Math.sin(u * TAU * current.freq * 2.3 + phase * 1.7 - time * 0.21) * ampPx * 0.28
-          if (noise > 0.001) {
-            y += wobble(u, strand, time) * noise * ampPx * 1.5
+          y += Math.sin(u * TAU * current.freq + phase + time * 0.32) * waveAmp
+          y += Math.sin(u * TAU * current.freq * 2.3 + phase * 1.7 - time * 0.21) * waveAmp * 0.28
+          if (noiseAmt > 0.001) {
+            y += wobble(u, strand, time) * noiseAmt * waveAmp * 1.5
           }
+          // The outer strands take the deflection at a little under full, so
+          // the bundle bends together without moving as one rigid shape.
+          y += disp[i]! * (isCore ? 1 : 0.62)
           if (current.grid > 0.001) {
             y = lerp(y, Math.round(y / step) * step, current.grid)
-          }
-          if (p > 0.001) {
-            const d = Math.abs(x - pointerPx) / reach
-            if (d < 1) {
-              const f = (1 - d * d) ** 2
-              y += pointerY * height * 0.07 * f * p
-            }
           }
           if (current.converge > 0.001) {
             x = lerp(x, cx, current.converge)
