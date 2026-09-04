@@ -112,6 +112,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             .planes{gap:clamp(40px,7vh,88px)}
             .plane{grid-area:auto!important;opacity:1!important;transform:none!important;align-items:start}
             .plane__frag{transform:none!important}
+            .plane__meta,.plane__frag{opacity:1!important}
             .depth__meter,.process__meter{display:none}
             .process__stages{gap:clamp(36px,6vh,72px)}
             .stage{grid-area:auto!important;opacity:1!important;transform:none!important}

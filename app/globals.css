@@ -1016,13 +1016,11 @@ main,
   position: relative;
   align-self: center;
   display: grid;
-  /* The planes scale past the camera; the chapter keeps them to itself rather
-     than letting them spill over the head and the meter. The clip margin gives
-     an exiting plane just enough room to grow without its first letter being
-     sliced off while it is still legible. */
+  /* The sheets are pulled up out of the field, so the field is the edge they
+     disappear under. The cut has to be exactly at that edge — any clip margin
+     and the top sheet carries on visibly over the chapter head. */
   overflow: clip;
-  /* A plain length: Chrome rejects clamp() here and silently falls back to 0. */
-  overflow-clip-margin: 56px;
+  overflow-clip-margin: 0px;
   padding-block: clamp(10px, 2vh, 24px);
 }
 
@@ -1034,43 +1032,78 @@ main,
 }
 
 /*
-  Each plane has three beats, not one continuous ramp:
+  Three sheets in a stack, pulled off one at a time.
 
-    enter   local 0     → 0.22   scale 0.88 → 1, fading up
-    hold    local 0.22  → 0.78   scale exactly 1, fully opaque — still
-    exit    local 0.78  → 1.00   scale 1 → 1.10, fading out on a squared curve
+  This chapter used to cross-dissolve its layers in place — which is exactly
+  what the four moves below it do, so two consecutive pinned chapters were
+  running the same interaction and the page repeated itself. It is a peel now:
+  the sheet on top is pulled up out of the field, and the next one is already
+  sitting underneath it, fully formed. Nothing fades in. The next layer is
+  revealed by the one above it leaving, which is also what the chapter is
+  actually about — the interface is the sheet on top, and there is something
+  under it.
 
-  The hold is the point. A plane that scales the whole time it is on screen is
-  never actually readable, and at anything above scale 1 the copy runs past the
-  edge of the field and gets clipped mid-sentence. Here nothing is ever asked to
-  be read while it is moving, and the exit of one plane overlaps the entrance of
-  the next (0.8 → 1.25 covers the next plane's 0 → 0.25) so the two cross rather
-  than the stage going briefly empty between them.
+  Each sheet is opaque, in the ground's own colour, so it genuinely occludes the
+  ones below rather than letting them ghost through. That is why the peel must
+  not fade: drop the sheet's opacity and its background goes with it, and the
+  layer beneath shows through the one still leaving.
 
-  The +0.3 head start puts the first plane already in its hold as the chapter
-  pins, so the pin never engages on an empty stage.
+    --c      camera position through the stack, in sheet units
+    --peel   how far this sheet has been pulled away, 0 → 1
+    --ready  how exposed it is; rises as the sheet above it clears
 */
 .plane {
   grid-area: 1 / 1;
-  --local: calc(var(--p, 0) * var(--planes) - var(--i) + 0.3);
-  --enter: clamp(0, calc(var(--local) / 0.22), 1);
-  --exit: clamp(0, calc((var(--local) - 0.78) / 0.22), 1);
+  --c: calc(var(--p, 0) * var(--planes));
+  --peel: clamp(0, calc(var(--c) - var(--i)), 1);
+  --ready: clamp(0, calc(var(--c) - var(--i) + 1), 1);
+  /* First in the source sits on top of the stack. */
+  z-index: calc(var(--planes) - var(--i));
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: clamp(24px, 4vw, 72px);
   align-items: center;
-  /* The exit fade is squared so the plane is already faint by the time it has
-     grown enough for the field to clip its edges — a half-lit line of type with
-     its first letter sliced off is the one thing this move must never do. */
-  opacity: calc(var(--enter) * (1 - var(--exit)) * (1 - var(--exit)));
-  transform: scale(calc(0.88 + var(--enter) * 0.12 + var(--exit) * 0.1));
-  transform-origin: 50% 50%;
+  padding-block: clamp(8px, 1.6vh, 18px);
+  background: var(--ground);
+  /*
+    The lift is eased out — peel * (2 - peel) — rather than linear. A linear
+    curtain spends half its travel only half open, which leaves a wide band of
+    empty ground above the layer it is uncovering. Front-loading the movement
+    gets the next layer onto the screen quickly and then settles.
+
+    The incoming sheet also rises the last few percent into place as it is
+    exposed, so a layer surfaces from underneath rather than simply being
+    uncovered where it already sat.
+  */
+  transform: translate3d(
+      0,
+      calc(
+        var(--peel) * (2 - var(--peel)) * -118% + (1 - var(--ready)) * 7%
+      ),
+      0
+    )
+    scale(calc(0.97 + var(--ready) * 0.03));
+  transform-origin: 50% 100%;
 }
 
-/* The last plane is where the chapter comes to rest: it arrives, holds, and
-   scrolls away with the pin rather than carrying on past the camera. */
+/* The sheet's own background stays fully opaque for the whole peel — that is
+   what stops the layer underneath ghosting through the one still leaving — but
+   its contents fade as it rises. Without this you can read the outgoing copy
+   above the incoming copy at the same time, which is two layers of text on
+   screen at once rather than one being uncovered. */
+.plane__meta,
+.plane__frag {
+  /* Gone by the time the sheet has lifted a third of the way, so what carries
+     on rising is a plain opaque curtain rather than a second column of copy
+     drifting above the one being uncovered. Over a sheet's ~990px turn that is
+     still a 280px fade, not a blink. */
+  opacity: clamp(0, calc(1 - var(--peel, 0) * 3.5), 1);
+}
+
+/* The bottom sheet is where the chapter comes to rest. Nothing is under it, so
+   it is never pulled away — it leaves with the pin instead. */
 .plane:last-child {
-  --exit: 0;
+  --peel: 0;
 }
 
 .depth[data-live='true'] .plane {
@@ -1143,10 +1176,9 @@ main,
 
 .plane__frag {
   justify-self: stretch;
-  /* A touch behind the copy, so the two do not move as one flat card. */
-  /* A touch behind the copy on the way in, so the pair does not move as one
-     flat card. It is level with the copy through the whole hold. */
-  transform: scale(calc(1 - (1 - var(--enter)) * 0.05));
+  /* Lags a touch behind the copy as the sheet is uncovered, so the pair does
+     not arrive as one flat card. */
+  transform: scale(calc(1 - (1 - var(--ready, 1)) * 0.04));
 }
 
 /* Draws across the seam into chapter 03, which is the one boundary on the page
@@ -2117,6 +2149,12 @@ main,
     transform: none;
   }
 
+  /* Nothing peels here, so nothing may be left part-faded by a peel value. */
+  .plane__meta,
+  .plane__frag {
+    opacity: 1;
+  }
+
   .frag {
     min-height: 0;
   }
@@ -2300,7 +2338,9 @@ main,
     align-items: start;
   }
 
-  .plane__frag {
+  .plane__frag,
+  .plane__meta {
+    opacity: 1;
     transform: none;
   }
 

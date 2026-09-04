@@ -26,10 +26,20 @@ disappears completely for about a fifth of a second.
 **Three protected cinematic moments:** the hero handing off (the headline
 scales and dissolves while the next chapter's statement rises through it — the
 philosophy is pulled up under the hero with a negative margin, so the two
-overlap rather than one ending and another starting); the depth dolly (pinned,
-three layers, the camera travelling through each one into the next); and the
-process morph (pinned, four moves, the line becoming a dot). Everything else
-stays restrained so those three land.
+overlap rather than one ending and another starting); the layer peel (pinned,
+three opaque sheets, each pulled up out of the field to uncover the one already
+sitting underneath it); and the process morph (pinned, four moves, the line
+becoming a dot). Everything else stays restrained so those three land.
+
+**Two consecutive pinned chapters must not share an interaction.** 02 and 03 both
+used to cross-dissolve their items in place, which made the page repeat itself
+no matter how different the two looked. 02 is a peel now, and nothing fades in:
+the next layer is revealed by the one above it leaving, which is also what the
+chapter is about. Each sheet is opaque in the ground's own colour so it occludes
+rather than ghosts, its contents clear early so a lifting sheet is a plain
+curtain rather than a second column of drifting copy, and the lift is eased out
+so the next layer arrives quickly instead of sitting behind a half-open
+curtain.
 
 **Scroll-revealed content is uncovered, not faded.** Blocks are wiped in from
 the left with a red edge riding the boundary — the page's own language, since
