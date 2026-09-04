@@ -14,6 +14,9 @@ const SCENE_FOR: Record<string, SceneName> = {
   '#about': 'about',
 }
 
+/** Reading order, so a chapter knows whether it is behind or ahead of you. */
+const SCENE_ORDER: SceneName[] = ['hero', 'philosophy', 'depth', 'process', 'about', 'contact']
+
 /**
  * The wordmark ships in two supplied variants whose fields match the two page
  * grounds, so switching between them as the tone changes keeps the mark
@@ -25,6 +28,7 @@ export default function Nav() {
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
+  const barRef = useRef<HTMLElement>(null)
 
   // The engine already tracks scroll every frame; a second scroll listener here
   // would do the same work twice.
@@ -34,6 +38,33 @@ export default function Nav() {
     () =>
       onFrame((s) => {
         setScene((prev) => (prev === s.scene ? prev : s.scene))
+      }),
+    [],
+  )
+
+  /*
+    Each chapter's numeral fills with red as you move through that chapter, so
+    the nav doubles as a progress spine rather than only saying which chapter
+    you are in. Written straight to the element: this changes every frame, and
+    running it through React state would re-render the masthead sixty times a
+    second to move a gradient stop.
+  */
+  useEffect(
+    () =>
+      onFrame((s) => {
+        const bar = barRef.current
+        if (!bar) return
+        const active = SCENE_ORDER.indexOf(s.scene)
+        const marks = bar.querySelectorAll<HTMLElement>('[data-chapter]')
+        for (const el of marks) {
+          const i = SCENE_ORDER.indexOf(el.dataset.chapter as SceneName)
+          const fill = i < active ? 1 : i > active ? 0 : s.sceneT
+          const next = fill.toFixed(3)
+          if (el.dataset.fill !== next) {
+            el.dataset.fill = next
+            el.style.setProperty('--fill', next)
+          }
+        }
       }),
     [],
   )
@@ -66,7 +97,12 @@ export default function Nav() {
   }))
 
   return (
-    <header className="nav" data-stuck={stuck ? 'true' : 'false'} data-open={open ? 'true' : 'false'}>
+    <header
+      ref={barRef}
+      className="nav"
+      data-stuck={stuck ? 'true' : 'false'}
+      data-open={open ? 'true' : 'false'}
+    >
       <a className="nav__brand" href="#top">
         <span className="brandmark">
           <Image
@@ -92,7 +128,7 @@ export default function Nav() {
       <nav className="nav__links" aria-label="Page sections">
         {links.map((item) => (
           <a key={item.href} href={item.href} aria-current={item.current ? 'true' : undefined}>
-            <span className="nav__n" aria-hidden="true">
+            <span className="nav__n" aria-hidden="true" data-chapter={SCENE_FOR[item.href]}>
               {item.mark}
             </span>
             {item.label}
@@ -129,7 +165,7 @@ export default function Nav() {
                 aria-current={item.current ? 'true' : undefined}
                 onClick={() => setOpen(false)}
               >
-                <span className="nav__n" aria-hidden="true">
+                <span className="nav__n" aria-hidden="true" data-chapter={SCENE_FOR[item.href]}>
                   {item.mark}
                 </span>
                 {item.label}

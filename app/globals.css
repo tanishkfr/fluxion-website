@@ -403,17 +403,88 @@ main,
 
 /* --- Reveal on enter ----------------------------------------------------- */
 
+/*
+  A wipe, not a fade.
+
+  Everything revealed on scroll used to fade up eighteen pixels — which is the
+  most templated motion on the web, and which left the page speaking two reveal
+  languages at once: this one, and the far better clip-mask the hero lines rise
+  out of. There is one language now, and it is the page's own: content is
+  uncovered left to right, the way the flux line travels, with a red edge riding
+  the boundary as it opens.
+
+  Opacity is deliberately not animated. Fading is what made it generic; being
+  uncovered is what makes it a wipe.
+*/
 [data-reveal] {
-  opacity: 0;
-  transform: translate3d(0, 18px, 0);
+  position: relative;
+  /*
+    A mask rather than a clip, and not for looks.
+
+    `clip-path: inset(0 100% 0 0)` gives the element a zero-width intersection
+    rectangle, so IntersectionObserver never reports it entering the viewport,
+    so the reveal never fires — the element stays hidden by the very thing the
+    reveal exists to remove. Masking is a paint operation and leaves the
+    element's geometry alone, so the observer still sees it arrive.
+  */
+  -webkit-mask-image: linear-gradient(90deg, #000 0 100%);
+  mask-image: linear-gradient(90deg, #000 0 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 0% 100%;
+  mask-size: 0% 100%;
+  /* Both spellings are declared, so both have to be transitioned — animating
+     only the unprefixed one leaves the engine using the prefixed property,
+     which then snaps to full width while the leading edge glides. */
   transition:
-    opacity var(--dur-slow) var(--ease-out) var(--d, 0s),
-    transform var(--dur-slow) var(--ease-out) var(--d, 0s);
+    mask-size var(--dur-slow) var(--ease-out) var(--d, 0s),
+    -webkit-mask-size var(--dur-slow) var(--ease-out) var(--d, 0s);
+}
+
+/*
+  The leading edge. The pseudo-element spans the whole box with a two-pixel red
+  sliver at its right edge, and starts translated fully to the left — so the
+  sliver sits exactly on the clip boundary and travels with it, rather than
+  being a separate bar that has to be kept in sync.
+*/
+[data-reveal]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* The band sits two pixels inside the pseudo-element's right edge rather than
+     on it. Flush with the edge it lands exactly on the clip boundary, where it
+     is as likely to be clipped away as drawn. */
+  background: linear-gradient(
+    90deg,
+    transparent calc(100% - 4px),
+    var(--red) calc(100% - 4px),
+    var(--red) calc(100% - 2px),
+    transparent calc(100% - 2px)
+  );
+  transform: translateX(-100%);
+  transition: transform var(--dur-slow) var(--ease-out) var(--d, 0s);
+  pointer-events: none;
 }
 
 [data-reveal][data-in='true'] {
-  opacity: 1;
-  transform: none;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Set once the wipe has finished. A mask that stays put would keep cutting off
+   anything painted outside the border box — a focus ring, most of all. */
+[data-reveal][data-revealed='true'] {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+[data-reveal][data-revealed='true']::after {
+  display: none;
+}
+
+[data-reveal][data-in='true']::after {
+  transform: translateX(0);
 }
 
 /* --- Navigation ---------------------------------------------------------- */
@@ -496,10 +567,30 @@ main,
    one to a 44px row without changing the type size. */
 /* The chapter index, so the nav reads as this page's table of contents and
    each link names its destination exactly what that chapter calls itself. */
+/* The numeral fills with red left to right as you move through its chapter,
+   and stays filled once you are past it — the nav reads as a progress spine
+   rather than only naming where you are. Painted through the glyphs
+   themselves, so it adds no element and no extra ink. */
 .nav__n {
   margin-right: 0.55em;
-  color: var(--red);
   font-variant-numeric: tabular-nums;
+  background-image: linear-gradient(
+    90deg,
+    var(--red) 0 calc(var(--fill, 0) * 100%),
+    var(--ink-faint) calc(var(--fill, 0) * 100%) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Without the engine there is no progress to report, so the numerals simply
+   read as the brand's red. */
+@supports not (background-clip: text) {
+  .nav__n {
+    background-image: none;
+    color: var(--red);
+  }
 }
 
 .nav__links a {
@@ -1056,6 +1147,24 @@ main,
   /* A touch behind the copy on the way in, so the pair does not move as one
      flat card. It is level with the copy through the whole hold. */
   transform: scale(calc(1 - (1 - var(--enter)) * 0.05));
+}
+
+/* Draws across the seam into chapter 03, which is the one boundary on the page
+   with no tone change to mark it. Scaled from the chapter's own pin progress
+   over its last fifteen percent, so it completes exactly as the pin releases. */
+.seam {
+  --p: 0;
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.seam__rule {
+  display: block;
+  height: 1px;
+  background: var(--red);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
 }
 
 /* --- Depth readout ------------------------------------------------------- */
@@ -2230,7 +2339,11 @@ main,
   }
 
   [data-reveal] {
-    opacity: 1;
-    transform: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  [data-reveal]::after {
+    display: none;
   }
 }

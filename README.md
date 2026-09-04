@@ -31,6 +31,22 @@ three layers, the camera travelling through each one into the next); and the
 process morph (pinned, four moves, the line becoming a dot). Everything else
 stays restrained so those three land.
 
+**Scroll-revealed content is uncovered, not faded.** Blocks are wiped in from
+the left with a red edge riding the boundary — the page's own language, since
+that is how the flux line travels. It has to be a `mask` and not a `clip-path`:
+a clip gives the element a zero-width intersection rectangle, so
+IntersectionObserver never reports it arriving and the reveal never fires, which
+leaves the block hidden by the very thing meant to uncover it. The mask is
+dropped once the wipe finishes, or it would keep cutting off anything painted
+outside the border box — a focus ring, most of all.
+
+**The tone crossfade is paced by scroll speed.** A fixed duration has to serve
+two opposite cases: someone reading slowly wants the ground to move gently,
+someone flicking through a boundary is travelling through the weakest part of
+the crossfade and wants it over with. It runs 460ms when the page is still and
+190ms when it is moving, with the ink cut following at half of whatever the
+ground just took.
+
 Every pinned beat is enter → **hold** → exit, never one continuous ramp. Nothing
 is ever asked to be read while it is moving, and the outgoing beat is fully gone
 at the instant the next one starts — two words that size superimposed at 30%

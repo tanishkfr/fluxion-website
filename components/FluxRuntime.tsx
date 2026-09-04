@@ -22,15 +22,41 @@ export default function FluxRuntime() {
     if (reduced) {
       targets.forEach((el) => {
         el.dataset.in = 'true'
+        el.dataset.revealed = 'true'
       })
       return
+    }
+
+    /*
+      The wipe masks to the border box, and a mask does not stop at the border
+      box for the things painted outside it — a focus ring on the LinkedIn link
+      inside a revealed block would be cut off along its left edge. So the mask
+      is dropped entirely once it has finished doing its job, rather than left
+      standing for the life of the page.
+
+      It must be a mask and not a clip. `clip-path: inset(0 100% 0 0)` gives the
+      element a zero-width intersection rectangle, so IntersectionObserver never
+      reports it entering the viewport and the reveal never fires — the element
+      ends up hidden by the very thing the reveal exists to remove. Masking is a
+      paint operation and leaves intersection geometry alone.
+    */
+    const release = (el: HTMLElement) => {
+      el.addEventListener(
+        'transitionend',
+        (e) => {
+          if ((e as TransitionEvent).propertyName === 'mask-size') el.dataset.revealed = 'true'
+        },
+        { once: true },
+      )
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue
-          ;(entry.target as HTMLElement).dataset.in = 'true'
+          const el = entry.target as HTMLElement
+          release(el)
+          el.dataset.in = 'true'
           observer.unobserve(entry.target)
         }
       },

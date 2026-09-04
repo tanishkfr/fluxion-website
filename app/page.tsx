@@ -271,6 +271,21 @@ export default function Home() {
           </div>
         </Track>
 
+        {/*
+          Four of the five chapter boundaries announce themselves by flipping
+          the ground between black and cornsilk. This one is dark to dark, so it
+          had no signal at all. A red hairline draws itself across the full width
+          as the boundary crosses the screen — the same language as the readouts.
+
+          It carries its own progress rather than the chapter's: inside the pin,
+          `--p` reaches 1 at the exact scroll position where this element first
+          enters the viewport, so the rule would already be fully drawn before
+          anyone could see it happen.
+        */}
+        <Track as="div" className="seam" kind="sweep">
+          <span className="seam__rule" aria-hidden="true" />
+        </Track>
+
         {/* ── 03 Four moves ──────────────────────────────────────────────── */}
         <Track
           as="section"

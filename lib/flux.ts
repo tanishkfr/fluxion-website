@@ -120,7 +120,18 @@ let lastScrollY = -1
  * leaving a heading black on a black ground. Two attributes on <html> instead:
  * `data-tone` moves the ground now, `data-ink` follows it half a beat later.
  */
-const INK_CUT_MS = 210
+/*
+ * The crossfade is paced by how hard the page is being scrolled.
+ *
+ * A fixed duration has to serve two opposite cases. Someone reading slowly
+ * wants the ground to move gently; someone flicking through a chapter boundary
+ * is travelling *through* the weakest part of the crossfade, and the longer it
+ * lasts the longer they spend looking at low contrast. So it runs long when the
+ * page is still and short when it is moving, and the ink cut follows at half of
+ * whatever the ground just took.
+ */
+const TONE_MS_CALM = 460
+const TONE_MS_FAST = 190
 let inkTimer = 0
 
 function clamp01(v: number): number {
@@ -209,13 +220,15 @@ function tick(now: number): void {
   const root = document.documentElement
   if (root.dataset.tone !== tone) {
     root.dataset.tone = tone
+    const dur = Math.round(TONE_MS_CALM - (TONE_MS_CALM - TONE_MS_FAST) * state.scrollVel)
+    root.style.setProperty('--dur-tone', `${dur}ms`)
     window.clearTimeout(inkTimer)
     if (state.reduced) {
       root.dataset.ink = tone
     } else {
       inkTimer = window.setTimeout(() => {
         root.dataset.ink = root.dataset.tone
-      }, INK_CUT_MS)
+      }, dur * 0.5)
     }
   }
 
