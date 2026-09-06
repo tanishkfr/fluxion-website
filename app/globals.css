@@ -119,16 +119,38 @@
   --shell: 1500px;
 
   /* Two radii. The design barely rounds anything and should not start. */
+  /* Three radii, and the design barely rounds anything. --r-lg exists only for
+     the fragment panels, which are the one place the page draws a container. */
   --r-sm: 3px;
   --r-md: 6px;
+  --r-lg: 10px;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
   /* Steep: spends as little time as possible near the midpoint of the ground
      crossfade, where contrast is at its weakest. */
   --ease-tone: cubic-bezier(0.85, 0, 0.15, 1);
+  /* --- Motion -----------------------------------------------------------
+     Four durations cover everything that is not scroll-driven.
+
+     --dur-fast   hover, focus, small state changes
+     --dur-mid    the masthead bar, the meters
+     --dur-enter  the standard entrance; every fadeUp on the page
+     --dur-slow   the long reveals
+
+     Two animations deliberately sit outside this and keep their own literal
+     values, because they are gestures rather than states: the headline rising
+     out of its clip mask (780ms — the largest thing on the page, and the one
+     piece of motion a visitor watches deliberately) and the variable-weight
+     settle under it (1100ms). Both were checked against the token set and both
+     are worse at 600ms.
+
+     What the tokens replaced was not intentional variety: fadeUp ran at 0.55s,
+     0.6s and 0.7s in six places, and pop at 0.45s and 0.5s in two. The stagger
+     those entrances read as lives in their delays, not their durations. */
   --dur-fast: 160ms;
   --dur-mid: 420ms;
+  --dur-enter: 600ms;
   --dur-slow: 900ms;
   --dur-tone: 420ms;
   /* Ink is cut rather than crossfaded, at the instant the ground passes its
@@ -300,7 +322,7 @@ main,
   color: var(--on-red);
   text-decoration: none;
   background: var(--red);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   transform: translateY(-250%);
   transition: transform var(--dur-fast) var(--ease-out);
 }
@@ -312,7 +334,7 @@ main,
 :focus-visible {
   outline: 2px solid var(--red);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
 }
 
 .eyebrow {
@@ -395,7 +417,7 @@ main,
   letter-spacing: 0.005em;
   text-decoration: none;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   cursor: pointer;
 }
 
@@ -419,7 +441,7 @@ main,
   background: var(--cornsilk);
   border-radius: inherit;
   opacity: 0;
-  transition: opacity var(--dur-fast) ease;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 
 .btn--solid:hover::after {
@@ -445,7 +467,7 @@ main,
   background: transparent;
   border-color: var(--rule);
   transition:
-    background-color var(--dur-fast) ease,
+    background-color var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-out);
 }
 
@@ -662,7 +684,7 @@ main,
   color: var(--ink);
   opacity: 0.56;
   text-decoration: none;
-  transition: opacity var(--dur-fast) ease;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 
 /* Where you are. The engine reports the chapter that owns the screen, and the
@@ -711,7 +733,7 @@ main,
   color: var(--ink);
   background: transparent;
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   cursor: pointer;
 }
 
@@ -838,14 +860,15 @@ main,
 }
 
 .hero__eyebrow {
-  animation: fadeUp 0.55s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.04s;
 }
 
 .hero__title {
   font-family: var(--font-display);
   font-weight: 900;
-  animation: weightIn 1.1s var(--ease-out) both;
+  /* Deliberately outside the token set — see the Motion note. */
+  animation: weightIn 1100ms var(--ease-out) both;
   animation-delay: 0.1s;
   font-size: var(--t-hero);
   line-height: 0.9;
@@ -866,13 +889,14 @@ main,
 .hero__line-in {
   display: block;
   transform: translateY(108%);
-  animation: rise 0.78s var(--ease-out) forwards;
+  /* Deliberately outside the token set — see the Motion note. */
+  animation: rise 780ms var(--ease-out) forwards;
   animation-delay: var(--d, 0s);
 }
 
 .hero__title .dot {
   transform: scale(0);
-  animation: pop 0.45s var(--ease-out) forwards;
+  animation: pop 450ms var(--ease-out) forwards;
   animation-delay: 0.66s;
 }
 
@@ -882,7 +906,7 @@ main,
   font-size: var(--t-lead);
   color: var(--ink-soft);
   text-wrap: pretty;
-  animation: fadeUp 0.6s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.34s;
 }
 
@@ -894,7 +918,7 @@ main,
   display: flex;
   flex-wrap: wrap;
   gap: var(--s3);
-  animation: fadeUp 0.6s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.42s;
 }
 
@@ -1417,7 +1441,7 @@ main,
   padding: clamp(18px, 2.4vw, 30px);
   background: var(--field);
   border: 1px solid var(--rule);
-  border-radius: 10px;
+  border-radius: var(--r-lg);
 }
 
 /* Both fragment kinds fill the column they are given and share one height, so
@@ -1546,7 +1570,7 @@ main,
   width: 78px;
   height: 7px;
   background: var(--rule);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
 }
 
 .frag__pill--sm {
@@ -1564,7 +1588,7 @@ main,
   height: clamp(16px, 2.2vh, 22px);
   background: var(--ink);
   opacity: 0.82;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
 }
 
 .frag__h--sm {
@@ -1575,7 +1599,7 @@ main,
   width: 74%;
   height: 7px;
   background: var(--rule);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
 }
 
 .frag__line + .frag__line {
@@ -1592,7 +1616,7 @@ main,
   font: 500 12px/1 var(--font-display);
   color: var(--on-red);
   background: var(--red);
-  border-radius: 6px;
+  border-radius: var(--r-md);
 }
 
 .frag--code {
@@ -2018,10 +2042,10 @@ main,
   color: var(--ink);
   background: var(--field);
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   transition:
-    border-color var(--dur-fast) ease,
-    background-color var(--dur-fast) ease;
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
 }
 
 .field input:hover,
@@ -2138,7 +2162,7 @@ main,
    space the form just left and its lines arrive in order, so sending reads as
    a conclusion instead of a jump cut. */
 .form-done {
-  animation: fadeUp 0.7s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   display: grid;
   justify-items: start;
   gap: 15px;
@@ -2156,7 +2180,7 @@ main,
   height: 14px;
   background: var(--red);
   border-radius: 50%;
-  animation: pop 0.5s var(--ease-out) both;
+  animation: pop 450ms var(--ease-out) both;
   animation-delay: 0.24s;
 }
 
@@ -2165,20 +2189,20 @@ main,
   font-weight: 900;
   font-size: clamp(1.6rem, 3vw, 2.4rem);
   letter-spacing: var(--track-display);
-  animation: fadeUp 0.6s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.1s;
 }
 
 .form-done__body {
   max-width: 44ch;
   color: var(--ink-soft);
-  animation: fadeUp 0.6s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.18s;
 }
 
 .form-done .btn {
   margin-top: var(--s2);
-  animation: fadeUp 0.6s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.28s;
 }
 

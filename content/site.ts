@@ -213,7 +213,11 @@ export const site = {
       fields: {
         name: { label: 'Your name', placeholder: 'Your full name' },
         email: { label: 'Email', placeholder: 'you@company.com' },
-        company: { label: 'Business or company', placeholder: 'What it is called' },
+        company: {
+          label: 'Business or company',
+          optional: 'optional',
+          placeholder: 'What it is called',
+        },
         need: {
           label: 'What you need',
           placeholder: 'Pick the closest one',

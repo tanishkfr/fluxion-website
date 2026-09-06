@@ -210,7 +210,9 @@ export default function ContactForm() {
         </p>
 
         <p className="field field--wide">
-          <label htmlFor={id('company')}>{f.company.label}</label>
+          <label htmlFor={id('company')}>
+            {f.company.label} <span className="field__optional">{f.company.optional}</span>
+          </label>
           <input
             id={id('company')}
             name="company"
@@ -221,7 +223,6 @@ export default function ContactForm() {
             onChange={(e) => set('company', e.target.value)}
             aria-invalid={errors.company ? 'true' : undefined}
             aria-describedby={errors.company ? errorId('company') : undefined}
-            required
           />
           {errors.company && (
             <span className="field__error" id={errorId('company')}>
