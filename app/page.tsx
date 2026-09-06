@@ -282,8 +282,24 @@ export default function Home() {
           enters the viewport, so the rule would already be fully drawn before
           anyone could see it happen.
         */}
+        {/*
+          The only place to act between the hero and the form, six screens
+          apart, used to be the button in the masthead. This sits on the seam
+          the page already draws — one line, one link, the studio's own voice,
+          placed where a visitor has just finished learning what we build.
+        */}
         <Track as="div" className="seam" kind="sweep">
           <span className="seam__rule" aria-hidden="true" />
+          <div className="seam__cta">
+            <p className="seam__line">{site.midCta.line}</p>
+            <a className="seam__link" href={site.midCta.href}>
+              {site.midCta.label}
+              <span className="seam__arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+            <p className="seam__aside">{site.midCta.aside}</p>
+          </div>
         </Track>
 
         {/* ── 03 Four moves ──────────────────────────────────────────────── */}
@@ -354,6 +370,18 @@ export default function Home() {
           <ul className="people">
             {site.about.people.map((person, i) => (
               <li className="person" key={person.name} data-reveal style={vars({ '--d': `${i * 0.1}s` })}>
+                {/* Renders only once a real portrait exists. No placeholder box
+                    and no layout reserved for one — the card is complete
+                    without it and simply gains an image above the name. */}
+                {person.portrait ? (
+                  <Image
+                    className="person__portrait"
+                    src={person.portrait}
+                    alt=""
+                    width={640}
+                    height={640}
+                  />
+                ) : null}
                 <h3 className="person__name">{person.name}</h3>
                 <p className="person__role">{person.role}</p>
                 <p className="person__study">{person.study}</p>
@@ -397,6 +425,10 @@ export default function Home() {
                   <dd>{item.value}</dd>
                 </div>
               ))}
+              <div className="expect__row" key={site.contact.form.pricing.label}>
+                <dt>{site.contact.form.pricing.label}</dt>
+                <dd>{site.contact.form.pricing.value}</dd>
+              </div>
             </dl>
           </div>
           <div className="contact__form">
@@ -410,6 +442,15 @@ export default function Home() {
           <Brandmark />
           <span className="sr-only">{site.name} — back to top</span>
         </a>
+        {/* The last thing on the page was a 14px footnote and two small links.
+            Anyone who has read this far and not filled in the form is worth one
+            more plain, legible offer — the address itself, at a size you can
+            actually hit. */}
+        <p className="footer__cta">
+          <a className="link footer__email" href={`mailto:${site.email}`}>
+            {site.email}
+          </a>
+        </p>
         <p className="footer__note">{site.footer.note}</p>
         <ul className="footer__links">
           {site.footer.links.map((link) => (

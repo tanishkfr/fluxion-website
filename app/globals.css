@@ -36,6 +36,14 @@
      red is 5:1, and it is the brand's own pairing: the supplied red lockup sets
      "Studios" and the signal dot in black. */
   --on-red: var(--black);
+  /* Red that carries text, as opposed to red that is a dot, a rule or a fill.
+     No single red clears 4.5:1 on both grounds — the gamut is too tight
+     between Just Black and Cornsilk. Fluxion Red is 5.0:1 on black and 3.9:1
+     on cornsilk; darkening it to clear cornsilk drops it to 3.4:1 on black.
+     So it follows the tone, like the ink does: the brand red on the dark
+     ground, a darker cut of the same hue on the light one. Both clear AA, and
+     the brand red is untouched everywhere it is decoration. */
+  --red-ink: var(--red);
   --ink-soft: rgba(255, 246, 226, 0.66);
   --ink-faint: rgba(255, 246, 226, 0.56);
   --rule: rgba(255, 246, 226, 0.17);
@@ -48,9 +56,24 @@
 
   /* Display sizes take the smaller of a width- and a height-derived value, so
      a short landscape window scales the type down instead of clipping it. */
-  --t-hero: clamp(2.25rem, min(8.2vw, 13.5vh), 9.5rem);
+  /* The 2.25rem floor made the headline 36px on a phone — the one thing that
+     has to land, set smaller than the process words further down the page.
+     2.6rem was tried and rejected: at 42px "Websites that feel" no longer fits
+     the 350px column, so the line broke and left "feel" alone on a line of its
+     own. 2.45rem is the largest size that still sets the opening line whole. */
+  --t-hero: clamp(2.45rem, min(8.2vw, 13.5vh), 9.5rem);
   --t-display: clamp(2.05rem, min(5.4vw, 9.6vh), 5rem);
   --t-title: clamp(1.6rem, 3.4vw, 3rem);
+  /* Two body sizes, and which one to use is a rule rather than a preference.
+     --t-lead is the single paragraph that sits directly under a chapter lead,
+     one per chapter, in a full-width column. --t-body is everything else:
+     multi-column blocks, layer copy, sub-heads, the form.
+
+     Chapter 02 was running its copy at a hardcoded 18px while other chapters
+     used --t-lead, which read as an accident. It was not wrong — its columns
+     are ~500px, and --t-lead in a 500px column gives a 31-character measure,
+     well below the readable band. It just had no rule behind it. Now it does,
+     and every measure on the page lands between 44 and 60 characters. */
   --t-lead: clamp(1.125rem, 1.75vw, 1.6rem);
   --t-body: clamp(1rem, 1.05vw, 1.125rem);
   --t-micro: 0.75rem;
@@ -66,17 +89,68 @@
   /* One word, on its own, at up to 176px. Effectively normal. */
   --track-move: -0.004em;
 
+  /* --- Spacing --------------------------------------------------------
+     Thirteen steps on a 4px base, derived from what the page already used
+     rather than imposed on it. The stylesheet had 43 distinct values across
+     gap/padding/margin; the twelve most common (4, 8, 12, 16, 20, 24, 32, 40,
+     48, 64, 80, 96) map onto these exactly, so adopting the scale moves almost
+     nothing. Only 28 and 72 had to be nudged, to 24/32 and 64/80.
+
+     A ten-step 4/8/12/16/24/32/48/64/96/144 scale was tried first and rejected:
+     it has no home for 20, 28, 40, 56, 72 or 80, which between them account for
+     nineteen uses. A scale the design has to fight is not a system. */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s7: 32px;
+  --s8: 40px;
+  --s9: 48px;
+  --s10: 64px;
+  --s11: 80px;
+  --s12: 96px;
+  --s13: 144px;
+
+  /* Layout spacing stays fluid — these are not steps on the scale. */
   --gutter: clamp(20px, 5vw, 96px);
   --bay: clamp(96px, 15vh, 200px);
   --shell: 1500px;
+
+  /* Two radii. The design barely rounds anything and should not start. */
+  /* Three radii, and the design barely rounds anything. --r-lg exists only for
+     the fragment panels, which are the one place the page draws a container. */
+  --r-sm: 3px;
+  --r-md: 6px;
+  --r-lg: 10px;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
   /* Steep: spends as little time as possible near the midpoint of the ground
      crossfade, where contrast is at its weakest. */
   --ease-tone: cubic-bezier(0.85, 0, 0.15, 1);
+  /* --- Motion -----------------------------------------------------------
+     Four durations cover everything that is not scroll-driven.
+
+     --dur-fast   hover, focus, small state changes
+     --dur-mid    the masthead bar, the meters
+     --dur-enter  the standard entrance; every fadeUp on the page
+     --dur-slow   the long reveals
+
+     Two animations deliberately sit outside this and keep their own literal
+     values, because they are gestures rather than states: the headline rising
+     out of its clip mask (780ms — the largest thing on the page, and the one
+     piece of motion a visitor watches deliberately) and the variable-weight
+     settle under it (1100ms). Both were checked against the token set and both
+     are worse at 600ms.
+
+     What the tokens replaced was not intentional variety: fadeUp ran at 0.55s,
+     0.6s and 0.7s in six places, and pop at 0.45s and 0.5s in two. The stagger
+     those entrances read as lives in their delays, not their durations. */
   --dur-fast: 160ms;
   --dur-mid: 420ms;
+  --dur-enter: 600ms;
   --dur-slow: 900ms;
   --dur-tone: 420ms;
   /* Ink is cut rather than crossfaded, at the instant the ground passes its
@@ -95,6 +169,7 @@
 
 :root[data-ink='light'] {
   --ink: var(--black);
+  --red-ink: #c4101a;
   --ink-soft: rgba(0, 0, 0, 0.7);
   --ink-faint: rgba(0, 0, 0, 0.56);
   --rule: rgba(0, 0, 0, 0.17);
@@ -247,7 +322,7 @@ main,
   color: var(--on-red);
   text-decoration: none;
   background: var(--red);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   transform: translateY(-250%);
   transition: transform var(--dur-fast) var(--ease-out);
 }
@@ -259,7 +334,7 @@ main,
 :focus-visible {
   outline: 2px solid var(--red);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
 }
 
 .eyebrow {
@@ -286,7 +361,7 @@ main,
 }
 
 .mark__n {
-  color: var(--red);
+  color: var(--red-ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -342,7 +417,7 @@ main,
   letter-spacing: 0.005em;
   text-decoration: none;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   cursor: pointer;
 }
 
@@ -366,7 +441,7 @@ main,
   background: var(--cornsilk);
   border-radius: inherit;
   opacity: 0;
-  transition: opacity var(--dur-fast) ease;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 
 .btn--solid:hover::after {
@@ -392,7 +467,7 @@ main,
   background: transparent;
   border-color: var(--rule);
   transition:
-    background-color var(--dur-fast) ease,
+    background-color var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-out);
 }
 
@@ -533,7 +608,7 @@ main,
 .nav__brand,
 .footer__brand {
   min-height: 44px;
-  padding-right: 8px;
+  padding-right: var(--s2);
 }
 
 .brandmark {
@@ -574,9 +649,11 @@ main,
 .nav__n {
   margin-right: 0.55em;
   font-variant-numeric: tabular-nums;
+  /* Text-safe red: the numeral is 13px, so it has to clear 4.5:1 on both
+     grounds. The brand red is kept for the rule and the dot. */
   background-image: linear-gradient(
     90deg,
-    var(--red) 0 calc(var(--fill, 0) * 100%),
+    var(--red-ink) 0 calc(var(--fill, 0) * 100%),
     var(--ink-faint) calc(var(--fill, 0) * 100%) 100%
   );
   -webkit-background-clip: text;
@@ -607,7 +684,7 @@ main,
   color: var(--ink);
   opacity: 0.56;
   text-decoration: none;
-  transition: opacity var(--dur-fast) ease;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 
 /* Where you are. The engine reports the chapter that owns the screen, and the
@@ -656,13 +733,13 @@ main,
   color: var(--ink);
   background: transparent;
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   cursor: pointer;
 }
 
 .nav__bars {
   display: grid;
-  gap: 4px;
+  gap: var(--s1);
   width: 16px;
 }
 
@@ -745,11 +822,15 @@ main,
   padding: clamp(90px, 13vh, 150px) var(--gutter) clamp(24px, 4vh, 48px);
 }
 
+/* The four rows used to share one grid gap, so eyebrow-to-title,
+   title-to-lede and lede-to-buttons were all exactly 30px. Three identical
+   gaps is not rhythm — nothing groups, and the eyebrow floats free of the
+   headline it belongs to. Explicit margins instead: tight, medium, wide. */
 .hero__inner {
   align-self: center;
   justify-items: start;
   display: grid;
-  gap: clamp(20px, 3vh, 38px);
+  gap: 0;
   width: 100%;
   max-width: var(--shell);
   margin: 0 auto;
@@ -770,15 +851,24 @@ main,
   will-change: transform, opacity;
 }
 
+/* The 0.1em compensates for the reveal clip box on .hero__line, which pulls
+   itself up by exactly that much so descenders survive the mask without
+   changing layout. Without it, a 12px margin here measured as -2px and the
+   eyebrow sat on the cap line of the headline. */
+.hero__title {
+  margin-top: calc(var(--s4) + 0.1em);
+}
+
 .hero__eyebrow {
-  animation: fadeUp 0.55s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.04s;
 }
 
 .hero__title {
   font-family: var(--font-display);
   font-weight: 900;
-  animation: weightIn 1.1s var(--ease-out) both;
+  /* Deliberately outside the token set — see the Motion note. */
+  animation: weightIn 1100ms var(--ease-out) both;
   animation-delay: 0.1s;
   font-size: var(--t-hero);
   line-height: 0.9;
@@ -799,22 +889,24 @@ main,
 .hero__line-in {
   display: block;
   transform: translateY(108%);
-  animation: rise 0.78s var(--ease-out) forwards;
+  /* Deliberately outside the token set — see the Motion note. */
+  animation: rise 780ms var(--ease-out) forwards;
   animation-delay: var(--d, 0s);
 }
 
 .hero__title .dot {
   transform: scale(0);
-  animation: pop 0.45s var(--ease-out) forwards;
+  animation: pop 450ms var(--ease-out) forwards;
   animation-delay: 0.66s;
 }
 
 .hero__lede {
-  max-width: 44ch;
+  margin-top: clamp(var(--s6), 3.4vh, var(--s7));
+  max-width: 52ch;
   font-size: var(--t-lead);
   color: var(--ink-soft);
   text-wrap: pretty;
-  animation: fadeUp 0.6s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.34s;
 }
 
@@ -822,10 +914,11 @@ main,
    whole entrance now settles inside a second, and the CTA is legible well
    before that. */
 .hero__actions {
+  margin-top: clamp(var(--s8), 5.4vh, var(--s10));
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  animation: fadeUp 0.6s var(--ease-out) both;
+  gap: var(--s3);
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.42s;
 }
 
@@ -930,9 +1023,14 @@ main,
   letter-spacing: -0.03em;
 }
 
+/* The unlit floor was 0.13, which is about 1.2:1 on Cornsilk — the largest text
+   in the chapter, and functionally invisible until the scroll reaches it. The
+   reveal is the point and it stays, but a word waiting its turn should be
+   legibly dim rather than absent: 0.32 measures 3.4:1, low enough that the lit
+   words still lead clearly and high enough to read if you stop halfway. */
 .sweep__w {
   display: inline-block;
-  opacity: calc(0.13 + 0.87 * clamp(0, calc(var(--p, 1) * var(--n) - var(--i)), 1));
+  opacity: calc(0.32 + 0.68 * clamp(0, calc(var(--p, 1) * var(--n) - var(--i)), 1));
 }
 
 /* Stepped in from the left edge the statement starts on, so the eye drops from
@@ -945,8 +1043,11 @@ main,
   margin-left: auto;
 }
 
+/* Two columns of ~537px. At --t-lead that is a 33-character measure — well
+   under the readable band, with a choppy rag and roughly twice the eye-returns
+   per idea. At --t-body the same column reads at ~60 characters. */
 .philosophy__body p {
-  font-size: var(--t-lead);
+  font-size: var(--t-body);
   color: var(--ink-soft);
   text-wrap: pretty;
 }
@@ -966,8 +1067,8 @@ main,
 
 .depth {
   --planes: 3;
-  height: 330vh;
-  height: 330svh;
+  height: 296vh;
+  height: 296svh;
 }
 
 .depth__stage {
@@ -1005,8 +1106,12 @@ main,
   letter-spacing: var(--track-display);
 }
 
+/* Chapter 02 set all of its copy at 18px while every other chapter used
+   --t-lead. A 30% smaller body for one chapter reads as an accident, and it
+   quietly demoted the chapter that carries the capability argument. */
 .depth__sub {
-  max-width: 46ch;
+  font-size: var(--t-body);
+  max-width: 52ch;
   padding-bottom: 0.25em;
   color: var(--ink-soft);
   text-wrap: pretty;
@@ -1132,16 +1237,21 @@ main,
   font-variant-numeric: tabular-nums;
 }
 
+/* This is the sentence you actually read while the peel runs; the chapter lead
+   above it is a persistent header. They were 46.4px and 48px — close enough to
+   read as a mistake rather than a relationship. The layer title is now clearly
+   the dominant one. */
 .plane__title {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: clamp(1.5rem, min(3.4vw, 5.4vh), 2.9rem);
+  font-size: clamp(1.6rem, min(4vw, 6.2vh), 3.4rem);
   line-height: 1.02;
   letter-spacing: var(--track-display);
 }
 
 .plane__body {
-  max-width: 44ch;
+  font-size: var(--t-body);
+  max-width: 52ch;
   color: var(--ink-soft);
   text-wrap: pretty;
 }
@@ -1197,6 +1307,78 @@ main,
   background: var(--red);
   transform: scaleX(var(--p, 0));
   transform-origin: left;
+}
+
+/* --- Mid-page CTA ---------------------------------------------------------
+   Sits on the seam, under the rule that is already drawing itself there. It is
+   a line of type and a link, not a section: no panel, no card, no border of its
+   own, nothing that would read as an advertisement dropped into the story.
+   It uncovers with the same left-to-right travel as the rule above it, driven
+   by the same --p, so it arrives as part of the boundary rather than on top
+   of it. */
+
+.seam__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s3) var(--s6);
+  padding-top: var(--s6);
+  /* Uncovered by the rule as it travels, a beat behind it. */
+  -webkit-mask-image: linear-gradient(90deg, #000 0 100%);
+  mask-image: linear-gradient(90deg, #000 0 100%);
+  -webkit-mask-size: calc(clamp(0, calc(var(--p, 0) * 1.6 - 0.35), 1) * 100%) 100%;
+  mask-size: calc(clamp(0, calc(var(--p, 0) * 1.6 - 0.35), 1) * 100%) 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.seam__line {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  letter-spacing: var(--track-display);
+  color: var(--ink);
+}
+
+.seam__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: 44px;
+  font: 500 clamp(1.05rem, 1.6vw, 1.35rem) / 1 var(--font-display);
+  letter-spacing: var(--track-display);
+  color: var(--red-ink);
+  text-decoration: none;
+  background-image: linear-gradient(var(--red), var(--red));
+  background-repeat: no-repeat;
+  background-position: 0 calc(100% - 10px);
+  background-size: 100% 1px;
+  transition: background-size var(--dur-fast) var(--ease-out);
+}
+
+.seam__arrow {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.seam__link:hover,
+.seam__link:focus-visible {
+  background-size: 100% 2px;
+}
+
+.seam__link:hover .seam__arrow,
+.seam__link:focus-visible .seam__arrow {
+  transform: translateX(3px);
+}
+
+/* Sits with the link, not at the far edge of a 1500px shell — pushed right it
+   stopped reading as a note about this offer and became unrelated furniture. */
+.seam__aside {
+  padding-left: var(--s2);
+  border-left: 1px solid var(--rule);
+  font: 500 var(--t-micro) / 1 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 /* --- Depth readout ------------------------------------------------------- */
@@ -1259,7 +1441,7 @@ main,
   padding: clamp(18px, 2.4vw, 30px);
   background: var(--field);
   border: 1px solid var(--rule);
-  border-radius: 10px;
+  border-radius: var(--r-lg);
 }
 
 /* Both fragment kinds fill the column they are given and share one height, so
@@ -1388,7 +1570,7 @@ main,
   width: 78px;
   height: 7px;
   background: var(--rule);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
 }
 
 .frag__pill--sm {
@@ -1406,7 +1588,7 @@ main,
   height: clamp(16px, 2.2vh, 22px);
   background: var(--ink);
   opacity: 0.82;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
 }
 
 .frag__h--sm {
@@ -1417,7 +1599,7 @@ main,
   width: 74%;
   height: 7px;
   background: var(--rule);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
 }
 
 .frag__line + .frag__line {
@@ -1434,14 +1616,14 @@ main,
   font: 500 12px/1 var(--font-display);
   color: var(--on-red);
   background: var(--red);
-  border-radius: 6px;
+  border-radius: var(--r-md);
 }
 
 .frag--code {
   overflow-x: auto;
   font-family: var(--font-mono);
   font-size: clamp(11px, 1.05vw, 14px);
-  line-height: 1.95;
+  line-height: 1.6;
   color: var(--ink-soft);
   white-space: pre;
 }
@@ -1453,8 +1635,8 @@ main,
    less than half a screen. The pacing across the page is even now: roughly one
    screen of travel per idea. */
 .process {
-  height: 340vh;
-  height: 340svh;
+  height: 300vh;
+  height: 300svh;
 }
 
 .process__stage {
@@ -1479,12 +1661,15 @@ main,
   text-align: center;
 }
 
+/* Chapter lead. Four chapters carry one, and this one had drifted to weight 500
+   with its own hardcoded tracking while the other three sat at 900 on the
+   token — same role, visibly different voice. */
 .process__lead {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 900;
   font-size: var(--t-title);
-  line-height: 1.04;
-  letter-spacing: -0.022em;
+  line-height: 1.02;
+  letter-spacing: var(--track-display);
 }
 
 .process__stages {
@@ -1558,8 +1743,12 @@ main,
 .stage__name {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: clamp(3.1rem, min(11vw, 17vh), 11rem);
-  line-height: 0.86;
+  /* Was clamp(3.1rem, min(11vw, 17vh), 17rem-ish) — 49.6px to 176px, which put
+     a process step above the page's own H1 (36px to 152px) at every single
+     viewport. Re-clamped to sit below it everywhere: 36.8 against 41.6 on a
+     phone, 96 against 113 at 1697. */
+  font-size: clamp(2.3rem, min(7.6vw, 11.5vh), 7rem);
+  line-height: 0.88;
   letter-spacing: var(--track-move);
   /* Arrives at 520 and firms up to 900 across the entrance, then stays there
      for the whole hold. The move does not just appear — it sets. */
@@ -1643,8 +1832,10 @@ main,
   letter-spacing: var(--track-display);
 }
 
+/* 7/-1 gave a 39-character measure at --t-lead. One column wider brings it
+   into the readable band without changing the composition. */
 .about__story {
-  grid-column: 7 / -1;
+  grid-column: 6 / -1;
   grid-row: 1 / span 2;
   display: grid;
   gap: 1.1em;
@@ -1667,9 +1858,22 @@ main,
   display: grid;
   align-content: start;
   justify-items: start;
-  gap: 7px;
-  padding-top: clamp(16px, 2.4vh, 28px);
+  gap: var(--s2);
+  padding-top: clamp(var(--s4), 2.4vh, var(--s7));
   border-top: 1px solid var(--rule);
+}
+
+/* Only ever in the DOM once a real photograph exists — there is no reserved
+   box and no placeholder. Square, ink-toned rule around it rather than a
+   shadow or a rounded card. */
+.person__portrait {
+  width: clamp(96px, 12vw, 148px);
+  height: auto;
+  margin-bottom: var(--s3);
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--r-sm);
+  filter: grayscale(1) contrast(1.05);
 }
 
 .person__name {
@@ -1730,11 +1934,13 @@ main,
   gap: clamp(16px, 2.4vh, 30px);
 }
 
+/* Also a chapter lead, so it takes the same size token. It keeps tighter
+   leading because it is the one lead that sets as a two-line stack. */
 .contact__title {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: clamp(1.9rem, 3.6vw, 3.2rem);
-  line-height: 0.96;
+  font-size: var(--t-title);
+  line-height: 0.98;
   letter-spacing: var(--track-display);
 }
 
@@ -1742,9 +1948,11 @@ main,
   display: block;
 }
 
+/* Sits in a 5/12 column beside the form. At --t-lead that is a 31-character
+   measure; the title above it already carries the weight. */
 .contact__body {
-  max-width: 38ch;
-  font-size: var(--t-lead);
+  max-width: 48ch;
+  font-size: var(--t-body);
   color: var(--ink-soft);
   text-wrap: pretty;
 }
@@ -1806,17 +2014,22 @@ main,
   grid-column: 1 / -1;
 }
 
+/* 12px is a caption size; a form label is read while typing into the field
+   under it, often on a phone, often in a hurry. */
 .field label {
-  font: 500 var(--t-micro) / 1.2 var(--font-display);
+  font: 500 0.8125rem / 1.2 var(--font-display);
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--ink-faint);
 }
 
+/* The 0.75 opacity here compounded with --ink-faint's own 0.56 alpha, giving an
+   effective 0.42 and 3.01:1 on Cornsilk. The tag already reads as secondary
+   from its size and case; it does not also need to be faded. */
 .field__optional {
   letter-spacing: 0.02em;
   text-transform: none;
-  opacity: 0.75;
+  color: var(--ink-faint);
 }
 
 .field input,
@@ -1829,10 +2042,10 @@ main,
   color: var(--ink);
   background: var(--field);
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   transition:
-    border-color var(--dur-fast) ease,
-    background-color var(--dur-fast) ease;
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
 }
 
 .field input:hover,
@@ -1894,7 +2107,7 @@ main,
 
 .form__summary {
   display: grid;
-  gap: 8px;
+  gap: var(--s2);
   padding: 14px 0 14px 18px;
   border-left: 2px solid var(--red);
 }
@@ -1916,7 +2129,7 @@ main,
 
 .form__summary ul {
   display: grid;
-  gap: 4px;
+  gap: var(--s1);
   margin: 0;
   padding-left: 1.15em;
 }
@@ -1949,7 +2162,7 @@ main,
    space the form just left and its lines arrive in order, so sending reads as
    a conclusion instead of a jump cut. */
 .form-done {
-  animation: fadeUp 0.7s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   display: grid;
   justify-items: start;
   gap: 15px;
@@ -1967,7 +2180,7 @@ main,
   height: 14px;
   background: var(--red);
   border-radius: 50%;
-  animation: pop 0.5s var(--ease-out) both;
+  animation: pop 450ms var(--ease-out) both;
   animation-delay: 0.24s;
 }
 
@@ -1976,20 +2189,20 @@ main,
   font-weight: 900;
   font-size: clamp(1.6rem, 3vw, 2.4rem);
   letter-spacing: var(--track-display);
-  animation: fadeUp 0.6s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.1s;
 }
 
 .form-done__body {
   max-width: 44ch;
   color: var(--ink-soft);
-  animation: fadeUp 0.6s var(--ease-out) both;
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.18s;
 }
 
 .form-done .btn {
-  margin-top: 8px;
-  animation: fadeUp 0.6s var(--ease-out) both;
+  margin-top: var(--s2);
+  animation: fadeUp var(--dur-enter) var(--ease-out) both;
   animation-delay: 0.28s;
 }
 
@@ -2030,6 +2243,21 @@ main,
   min-height: 44px;
 }
 
+.footer__cta {
+  grid-area: 2 / 1 / 3 / -1;
+  margin-top: calc(var(--s2) * -1);
+}
+
+.footer__email {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 1.7vw, 1.5rem);
+  letter-spacing: var(--track-display);
+}
+
 .footer__note,
 .footer__legal {
   font-size: 0.875rem;
@@ -2037,11 +2265,11 @@ main,
 }
 
 .footer__note {
-  grid-area: 2 / 1;
+  grid-area: 3 / 1;
 }
 
 .footer__legal {
-  grid-area: 2 / 2;
+  grid-area: 3 / 2;
   justify-self: end;
 }
 
@@ -2118,7 +2346,7 @@ main,
 
   .depth__head {
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: var(--s3);
   }
 
   .depth__field {
@@ -2169,6 +2397,26 @@ main,
 }
 
 @media (max-width: 620px) {
+  /* The hero centred ~390px of content inside a 100svh stage, which left about
+     250px of empty ground above it and as much again below — six tenths of the
+     first screen a visitor ever sees, doing nothing. The content sits high
+     instead, and the scroll cue still holds the bottom edge. */
+  .hero__stage {
+    padding-top: clamp(88px, 12vh, 130px);
+  }
+
+  .hero__inner {
+    align-self: start;
+    margin-top: clamp(var(--s8), 9vh, var(--s12));
+  }
+
+  /* 0.16em over 42 characters pushed this onto a second line at 390px, and a
+     two-line eyebrow reads as a wrapping accident rather than a standfirst. */
+  .hero__eyebrow {
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+  }
+
   /* Shorter travel per idea on a phone: the same sequence, fewer thumb-swipes
      to get through it. */
   .depth {
@@ -2181,7 +2429,7 @@ main,
 
   .depth__meter,
   .process__meter {
-    gap: 8px;
+    gap: var(--s2);
   }
 
   .depth__label,
@@ -2214,10 +2462,15 @@ main,
 
   .footer__brand,
   .footer__links,
+  .footer__cta,
   .footer__note,
   .footer__legal {
     grid-area: auto;
     justify-self: start;
+  }
+
+  .footer__cta {
+    margin-top: 0;
   }
 
   .hero__actions .btn {
@@ -2233,6 +2486,14 @@ main,
    keyboard, and :active still covers the press. */
 
 @media (hover: none) {
+  .seam__link:hover {
+    background-size: 100% 1px;
+  }
+
+  .seam__link:hover .seam__arrow {
+    transform: none;
+  }
+
   .btn--solid:hover,
   .btn--ghost:hover {
     transform: none;
@@ -2372,6 +2633,13 @@ main,
        not each land on a different weight because of where the scroll happens
        to be. */
     font-variation-settings: 'wght' 900;
+  }
+
+  /* The mask is scroll-driven; with motion reduced there is no scroll progress
+     to drive it, so it has to be dropped or the CTA never appears at all. */
+  .seam__cta {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 
   .sweep__w {

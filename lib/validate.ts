@@ -67,8 +67,13 @@ export function validate(values: ContactValues): FieldErrors {
   else if (values.email.length > LIMITS.email) errors.email = 'That is longer than we can store.'
   else if (!EMAIL.test(values.email)) errors.email = 'That email address does not look right.'
 
-  if (!values.company) errors.company = 'Which business is this for?'
-  else if (values.company.length > LIMITS.company) errors.company = 'That is longer than we can store.'
+  /* Optional. It was the only required field that is not needed in order to
+     reply intelligently — the message says what the business does and the email
+     domain usually says who they are. Five required fields to send a first
+     enquiry is friction charged for nothing. */
+  if (values.company.length > LIMITS.company) {
+    errors.company = 'That is longer than we can store.'
+  }
 
   if (!values.need) errors.need = 'Pick the closest option.'
   else if (!NEED_OPTIONS.includes(values.need)) errors.need = 'Pick one of the listed options.'

@@ -47,6 +47,8 @@ export const site = {
   philosophy: {
     mark: '01',
     marker: 'Translation',
+    /** Nav wayfinding. See the note on `nav` at the foot of this file. */
+    navLabel: 'How we think',
     /** Revealed word by word as the section passes through the viewport. */
     statement:
       'A website should feel like the business behind it — the way it talks, the way it thinks, the way it treats people.',
@@ -66,6 +68,7 @@ export const site = {
   depth: {
     mark: '02',
     marker: 'Surface & system',
+    navLabel: 'What we build',
     lead: 'The interface is only half the story.',
     sub: 'Three layers. We build all of them, so none of them quietly becomes your problem.',
     layers: [
@@ -115,9 +118,26 @@ export const site = {
     note: 'Those three panels are this page. That schema is the form at the bottom of it.',
   },
 
+  /**
+   * The mid-page CTA.
+   *
+   * Chapter 02 is where a visitor learns what we can actually build; the form
+   * is six screens further down, and until now the only way to act between the
+   * two was the button in the masthead. This is one line and one link, on the
+   * seam the page already draws between 02 and 03 — not a section, and not a
+   * pitch.
+   */
+  midCta: {
+    line: 'Already know what you need building?',
+    label: 'Start a project',
+    href: '#contact',
+    aside: 'Reply in 24–36 hours',
+  },
+
   process: {
     mark: '03',
     marker: 'Four moves',
+    navLabel: 'How we work',
     lead: 'Good work starts before the first pixel.',
     stages: [
       {
@@ -142,22 +162,41 @@ export const site = {
   about: {
     mark: '04',
     marker: 'The two of us',
+    navLabel: 'Who we are',
     title: 'Two people who kept coming back to this.',
+    /**
+      * Order matters here. This used to open on the attempts that did not work
+      * and arrive at the competence second — on a page with no client work,
+      * that made the first credibility signal a list of things that failed.
+      * Same facts, same voice, nothing removed: the thing they are good at
+      * leads, and the history follows it as context rather than as the pitch.
+      */
     story: [
-      'Tanishk and Shreyas have been friends for about six years, and have wanted to build something together for most of them. There were other attempts — a fashion label among them — that never quite found their footing.',
-      'What kept surfacing was interface design. The part they were both good at, and neither of them got bored of. Fluxion is what happened when they stopped treating it as a side interest.',
+      'Tanishk and Shreyas are interface designers. It is the part of the work they were both good at and neither of them got bored of — the reason they stopped treating it as a side interest and started a studio around it.',
+      'They have been friends for about six years and wanted to build something together for most of them. There were other attempts, a fashion label among them, that never quite found their footing. This one is the one that stuck, and it stuck because they were already doing it.',
     ],
+    /**
+      * `portrait` is the insertion point for founder photographs. It is
+      * deliberately empty rather than a placeholder: the card renders complete
+      * without it today, and drops a square portrait above the name the moment
+      * a real path is put here. Put a square image in /public/brand/ and set
+      * the path — no other change is needed, and nothing has to be redesigned.
+      *
+      * Do not point this at stock photography.
+      */
     people: [
       {
         name: 'Tanishk',
         role: 'Co-Founder',
         study: 'Studies Human-Centred Design at Srishti.',
+        portrait: '',
         linkedin: 'https://www.linkedin.com/in/tanishksalagame/',
       },
       {
         name: 'Shreyas',
         role: 'Co-Founder',
         study: 'Studies Interaction & UI/UX Design at PES.',
+        portrait: '',
         linkedin: 'https://www.linkedin.com/in/shreyas-srinivasan-b44175353/',
       },
     ],
@@ -174,7 +213,11 @@ export const site = {
       fields: {
         name: { label: 'Your name', placeholder: 'Your full name' },
         email: { label: 'Email', placeholder: 'you@company.com' },
-        company: { label: 'Business or company', placeholder: 'What it is called' },
+        company: {
+          label: 'Business or company',
+          optional: 'optional',
+          placeholder: 'What it is called',
+        },
         need: {
           label: 'What you need',
           placeholder: 'Pick the closest one',
@@ -214,13 +257,35 @@ export const site = {
        * a small business sending anything at all — answering it after they have
        * already taken the risk is answering it too late.
        */
+      /**
+       * Four facts, all of them supplied and all of them true. They answer the
+       * questions a visitor is actually holding when they reach the form —
+       * when will I hear back, how long will this take, are they free, where
+       * are they — before they decide whether to fill it in.
+       *
+       * Pricing is deliberately not a number here. See `pricing` below.
+       */
       expect: [
+        { label: 'Taking work', value: 'Right now' },
         { label: 'We reply in', value: '24–36 hours' },
         { label: 'Projects run', value: '3–6 weeks, depending on scope' },
+        { label: 'Based in', value: 'Bengaluru, working worldwide' },
       ],
+      /**
+       * Kept as a phrase rather than a figure, on purpose.
+       *
+       * A public starting price does two things to a studio selling custom
+       * work: it becomes the number every later quote is measured against, and
+       * it invites comparison on cost with people who are not doing the same
+       * job. The rest of this block already gives a visitor the concrete
+       * footing they need — availability, reply time, timeline, location — so
+       * the price is the one thing worth a conversation. The form's own budget
+       * field is where the number gets discussed.
+       */
+      pricing: { label: 'Pricing', value: 'On enquiry' },
       success: {
         title: 'Got it.',
-        body: 'Your message is with us. We usually reply within a couple of days — if it is urgent, email us directly.',
+        body: 'Your message is with us. You will hear back within 24–36 hours — if it is urgent, email us directly.',
         again: 'Send another message',
       },
       errorFallback: 'Something went wrong on our end. You can email us directly instead:',
@@ -246,11 +311,26 @@ export const site = {
  * their destination something other than what it called itself. Derived, they
  * cannot disagree again.
  */
+/**
+ * The navigation.
+ *
+ * These used to read the chapter `marker` directly, so the link and the chapter
+ * it pointed at could never disagree. That solved a real problem — they had
+ * drifted once — but it solved it by making the nav say "Translation",
+ * "Surface & system" and "Four moves". Those are good chapter titles and poor
+ * signposts: a first-time visitor cannot tell which one holds the answer to
+ * "what do they actually build".
+ *
+ * So each chapter now owns both strings, side by side in one object, and the
+ * nav reads `navLabel`. The page keeps its title — with a full-size lead
+ * directly beneath it doing the explaining — and the masthead says where each
+ * link goes. Rename a chapter and both are in front of you.
+ */
 export const nav = [
-  { href: '#philosophy', mark: site.philosophy.mark, label: site.philosophy.marker },
-  { href: '#depth', mark: site.depth.mark, label: site.depth.marker },
-  { href: '#process', mark: site.process.mark, label: site.process.marker },
-  { href: '#about', mark: site.about.mark, label: site.about.marker },
+  { href: '#philosophy', mark: site.philosophy.mark, label: site.philosophy.navLabel },
+  { href: '#depth', mark: site.depth.mark, label: site.depth.navLabel },
+  { href: '#process', mark: site.process.mark, label: site.process.navLabel },
+  { href: '#about', mark: site.about.mark, label: site.about.navLabel },
 ] as const
 
 export type Site = typeof site

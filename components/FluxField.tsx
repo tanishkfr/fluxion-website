@@ -345,7 +345,22 @@ export default function FluxField() {
 
         // Every chapter sets its type on the left, so the line keeps its
         // energy on the open right side and thins out under the copy.
-        const base = isCore ? alpha : alpha * 0.13
+        /*
+          The two outer strands were drawn at 0.13 of the core's alpha, which on
+          the dark ground works out at about 0.12 — below the threshold where
+          they read as anything at all. The hero's open right half was being
+          blamed on the composition when the composition was there and simply
+          was not rendering.
+
+          0.26 still keeps them at roughly a quarter of the core's weight, so
+          the red strand is unambiguously the line and these two are its wake.
+          It is a factor of each scene's own alpha, so the chapters that are
+          deliberately quiet stay quiet: philosophy's horizon lands at 0.08.
+          The left-to-right ramp below already keeps all three faintest under
+          the type, so the extra weight falls on the open side, which is where
+          it was wanted.
+        */
+        const base = isCore ? alpha : alpha * 0.26
         const rgb = isCore ? RED : ink
         const ramp = ctx.createLinearGradient(0, 0, width, 0)
         ramp.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${base * 0.16})`)
