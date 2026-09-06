@@ -100,7 +100,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             hidden waiting to be revealed — the page reads straight down. */}
         <noscript>
           <style>{`
-            [data-reveal]{-webkit-mask-image:none!important;mask-image:none!important}
+            [data-reveal],.seam__cta{-webkit-mask-image:none!important;mask-image:none!important}
             [data-reveal]::after{display:none!important}
             .hero,.depth,.process{height:auto!important}
             .hero__stage,.depth__stage,.process__stage{position:static!important;height:auto!important;padding-block:var(--bay)}
