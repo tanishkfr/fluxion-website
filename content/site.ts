@@ -398,32 +398,11 @@ export const site = {
         ],
       },
       {
-        id: 'analytics-performance',
-        heading: 'Analytics and performance measurement',
-        blocks: [
-          {
-            p: 'Fluxion Studios uses two measurement services built into its hosting platform, Vercel, and enabled for this site:',
-          },
-          {
-            list: [
-              'Vercel Web Analytics — to understand aggregate traffic: page views and referrers, along with approximate location, browser, operating system, and device category.',
-              'Vercel Speed Insights — to collect real-user performance measurements such as loading, responsiveness, and layout-stability metrics.',
-            ],
-          },
-          {
-            p: 'Vercel Web Analytics is designed without third-party analytics cookies. Visitors are identified by a hash created from the incoming request, which is valid for a single day and then automatically reset, rather than by persistent cross-site identification.',
-          },
-          {
-            p: 'These services are used only to understand how the site is used and to improve its performance. They are not used for advertising or cross-site tracking: Fluxion does not use advertising pixels or cross-site behavioural tracking.',
-          },
-        ],
-      },
-      {
         id: 'service-providers',
         heading: 'Who else handles it',
         blocks: [
           {
-            p: 'Vercel hosts this website and processes the requests made to it. Vercel also provides Web Analytics and Speed Insights, the measurement services described above, as part of the same platform.',
+            p: 'Vercel hosts this website and processes the requests made to it.',
           },
           {
             p: 'When you submit the enquiry form successfully, Resend processes the submitted details to deliver them to Fluxion Studios’ designated mailbox.',
@@ -450,13 +429,16 @@ export const site = {
       },
       {
         id: 'cookies',
-        heading: 'Cookies',
+        heading: 'Cookies and analytics',
         blocks: [
           {
-            p: 'This site does not set advertising or cross-site tracking cookies, and it loads no advertising or tracking pixels. Vercel Web Analytics is designed without third-party analytics cookies; it identifies visitors with a hash created from the incoming request, as described above. No cookie banner is shown on this site.',
+            p: 'This site currently runs no visitor analytics. No analytics script is loaded, so no analytics measurements are collected here.',
           },
           {
-            p: 'The infrastructure providers named above may process necessary technical information, such as the request itself, in order to serve the site, deliver email, and produce the measurements described above.',
+            p: 'Fluxion does not use advertising pixels, cross-site behavioural tracking, or analytics cookies. No cookie banner is shown on this site.',
+          },
+          {
+            p: 'The infrastructure providers named above may process necessary technical information, such as the request itself, in order to serve the site and deliver email.',
           },
         ],
       },
