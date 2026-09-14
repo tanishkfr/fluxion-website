@@ -157,8 +157,19 @@
      own midpoint. See "Tone" below. */
   --tone-cut: 210ms;
 
+  /* The announcement strip sits above the masthead and is fixed with it, so
+     anything clearing the bar has to clear both: the nav is offset by the
+     strip, and anchor targets account for the pair.
+
+     The bar's height is one line of the ticker's own type plus a little air,
+     derived from the same two values the line is set in — so changing the
+     ticker copy or its type cannot silently desync the offsets from the real
+     bar. The phone's static reduced-motion line needs two, and says so. */
+  --ticker-size: var(--t-micro);
+  --ticker-leading: 1.3;
+  --ticker-h: calc(var(--ticker-leading) * var(--ticker-size) + var(--s5));
   /* Clears the fixed masthead when an anchor lands. */
-  --nav-h: clamp(58px, 8vh, 78px);
+  --nav-h: calc(clamp(58px, 8vh, 78px) + var(--ticker-h));
 }
 
 /* The ground moves on `data-tone`; the ink follows on `data-ink`, which the
@@ -311,7 +322,9 @@ main,
 
 .skip {
   position: fixed;
-  top: 10px;
+  /* Below the announcement strip, so the red control does not sit on the red
+     bar it would otherwise blend into. */
+  top: calc(var(--ticker-h) + 10px);
   left: 10px;
   z-index: 100;
   display: inline-flex;
@@ -562,11 +575,91 @@ main,
   transform: translateX(0);
 }
 
+/* --- New work ticker ------------------------------------------------------
+   A studio announcement strip: one line of the page's own micro type, above
+   the masthead and fixed with it. Fixed rather than in flow, so it can never
+   shift the page as it loads, and clipped to its own bar, so a track wider
+   than the viewport can never become horizontal scroll.
+
+   The track holds two identical halves and slides by exactly half its own
+   width. The loop restarts on a copy indistinguishable from the one it began
+   on — no jump — and one half is wider than the widest viewport, so no gap
+   opens behind it. It keeps its own duration: this is a gesture, measured in
+   tens of seconds, not one of the state durations in the token set. */
+
+.ticker {
+  --ticker-dur: 120s;
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 41;
+  display: flex;
+  align-items: center;
+  min-height: var(--ticker-h);
+  overflow: hidden;
+  color: var(--on-red);
+  background: var(--red);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* The solid buttons' hover, reused: the same faint cornsilk wash, so the strip
+   reads as the same kind of thing they are rather than a new hover language. */
+.ticker::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--cornsilk);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.ticker__track {
+  display: flex;
+  flex: none;
+  width: max-content;
+  animation: ticker var(--ticker-dur) linear infinite;
+}
+
+.ticker__item {
+  padding-inline: clamp(28px, 4vw, 64px);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--ticker-size);
+  line-height: var(--ticker-leading);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@keyframes ticker {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Hover only where there is a real pointer: it holds the line still long enough
+   to read, and lights the strip the way the buttons light. Focus-visible gets
+   the same hold, for the keyboard. */
+@media (hover: hover) {
+  .ticker:hover::after {
+    opacity: 0.14;
+  }
+
+  .ticker:hover .ticker__track {
+    animation-play-state: paused;
+  }
+}
+
+.ticker:focus-visible .ticker__track {
+  animation-play-state: paused;
+}
+
 /* --- Navigation ---------------------------------------------------------- */
 
 .nav {
   position: fixed;
-  inset: 0 0 auto 0;
+  inset: var(--ticker-h) 0 auto 0;
   z-index: 40;
   display: flex;
   align-items: center;
@@ -819,7 +912,7 @@ main,
   grid-template-rows: 1fr auto;
   height: 100vh;
   height: 100svh;
-  padding: clamp(90px, 13vh, 150px) var(--gutter) clamp(24px, 4vh, 48px);
+  padding: calc(clamp(90px, 13vh, 150px) + var(--ticker-h)) var(--gutter) clamp(24px, 4vh, 48px);
 }
 
 /* The four rows used to share one grid gap, so eyebrow-to-title,
@@ -1081,7 +1174,7 @@ main,
   height: 100svh;
   max-width: var(--shell);
   margin: 0 auto;
-  padding: clamp(90px, 13vh, 150px) var(--gutter) clamp(28px, 5vh, 56px);
+  padding: calc(clamp(90px, 13vh, 150px) + var(--ticker-h)) var(--gutter) clamp(28px, 5vh, 56px);
 }
 
 /* Split on the same columns as the planes below it, so the chapter reads on
@@ -1649,7 +1742,7 @@ main,
   height: 100svh;
   max-width: var(--shell);
   margin: 0 auto;
-  padding: clamp(90px, 13vh, 150px) var(--gutter) clamp(28px, 5vh, 56px);
+  padding: calc(clamp(90px, 13vh, 150px) + var(--ticker-h)) var(--gutter) clamp(28px, 5vh, 56px);
 }
 
 .process__head {
@@ -1929,7 +2022,7 @@ main,
   grid-column: 1 / 6;
   align-self: start;
   position: sticky;
-  top: clamp(96px, 15vh, 170px);
+  top: calc(clamp(96px, 15vh, 170px) + var(--ticker-h));
   display: grid;
   gap: clamp(16px, 2.4vh, 30px);
 }
@@ -2397,6 +2490,17 @@ main,
 }
 
 @media (max-width: 620px) {
+  /* The strip keeps its place on a phone rather than being hidden — the same
+     line, set a little smaller and a little tighter to cross. The bar height
+     follows from --ticker-size, so it tightens with it. */
+  :root {
+    --ticker-size: 0.6875rem;
+  }
+
+  .ticker__item {
+    letter-spacing: 0.11em;
+  }
+
   /* The hero centred ~390px of content inside a 100svh stage, which left about
      250px of empty ground above it and as much again below — six tenths of the
      first screen a visitor ever sees, doing nothing. The content sits high
@@ -2653,5 +2757,40 @@ main,
 
   [data-reveal]::after {
     display: none;
+  }
+
+  /* The ticker becomes one static line. This is the one place the strip may
+     wrap — a fixed bar cannot hold the whole line at phone widths — so the
+     copies beyond the first are dropped and the line is centred. */
+  .ticker__track {
+    animation: none;
+    transform: none;
+    /* The row is no longer a set of copies to slide but a single line to fit,
+       so it takes the bar's width instead of its content's and lets the line
+       wrap inside it. */
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .ticker__item:not(:first-child) {
+    display: none;
+  }
+
+  .ticker__item {
+    min-width: 0;
+    padding-inline: var(--s4);
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+/* Reduced motion on a phone: the static line wraps to two, so the bar takes
+   the extra line — derived from the same type and leading it wraps. A wider
+   window sets it on one line and keeps the base height. */
+@media (prefers-reduced-motion: reduce) and (max-width: 620px) {
+  :root {
+    --ticker-h: calc(2 * var(--ticker-leading) * var(--ticker-size) + var(--s5));
   }
 }

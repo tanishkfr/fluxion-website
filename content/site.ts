@@ -33,6 +33,16 @@ export const site = {
     ],
   },
 
+  /**
+   * The studio's announcement strip, above the masthead. One line, repeated.
+   * It is set in the page's micro type and uppercased in the stylesheet, like
+   * every other eyebrow and label on the site — so the case here is the one it
+   * is read in, not the one it is drawn in.
+   */
+  ticker: {
+    text: 'New work ↗ Taamboolam Homestay — now live at taamboolam.com',
+    href: 'https://taamboolam.com',
+  },
 
   hero: {
     eyebrow: 'Fluxion Studios — Web design & development',

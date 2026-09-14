@@ -6,6 +6,7 @@ import './globals.css'
 
 import FluxRuntime from '@/components/FluxRuntime'
 import Nav from '@/components/Nav'
+import Ticker from '@/components/Ticker'
 import { site } from '@/content/site'
 import { siteUrl } from '@/lib/siteUrl'
 
@@ -128,6 +129,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
         <div className="ground" aria-hidden="true" />
         <FluxRuntime />
+        <Ticker />
         <Nav />
         {children}
         <script
