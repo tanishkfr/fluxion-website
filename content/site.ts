@@ -293,6 +293,17 @@ export const site = {
        * field is where the number gets discussed.
        */
       pricing: { label: 'Pricing', value: 'On enquiry' },
+      /**
+       * Sits directly under the submit button. It is a description of what
+       * sending the form does, not a consent gate: the form has one purpose,
+       * and a mandatory checkbox for that would be theatre. The link is the
+       * only place the privacy page is advertised, besides the footer.
+       */
+      notice: {
+        text: 'By sending this enquiry, you are sharing these details so Fluxion Studios can review and respond to your project.',
+        link: 'Read our Privacy Policy',
+        href: '/privacy',
+      },
       success: {
         title: 'Got it.',
         body: 'Your message is with us. You will hear back within 24–36 hours — if it is urgent, email us directly.',
@@ -300,6 +311,174 @@ export const site = {
       },
       errorFallback: 'Something went wrong on our end. You can email us directly instead:',
     },
+  },
+
+  /**
+   * The privacy page.
+   *
+   * Every statement here describes what this repository actually does. Nothing
+   * claims a compliance regime, a provider retention period that has not been
+   * verified, or a fixed deletion period the studio does not yet operate.
+   * Retention is deliberately stated as a rule rather than a number; if a
+   * period is ever adopted, it belongs in that section first.
+   */
+  privacy: {
+    heading: 'What this site does with your information',
+    metaDescription:
+      'What Fluxion Studios collects through this website, why it is collected, who processes it, and how to ask about it.',
+    intro:
+      'This page describes what Fluxion Studios actually collects through this website, why, and how to ask about it. It is written in plain English on purpose.',
+    updated: { label: 'Last updated', value: '14 September 2026' },
+    contactLabel: 'Privacy contact',
+    back: 'Back to the main site',
+    sections: [
+      {
+        id: 'who-operates',
+        heading: 'Who operates this site',
+        blocks: [
+          {
+            p: 'Fluxion Studios is a web design and development studio based in Bengaluru, India. It operates this website and is responsible for the information described on this page.',
+          },
+          {
+            p: 'Anything about privacy can be sent to fluxion.workspace@gmail.com.',
+          },
+        ],
+      },
+      {
+        id: 'enquiry-form',
+        heading: 'What the enquiry form collects',
+        blocks: [
+          { p: 'The form at the bottom of the main page asks for:' },
+          {
+            list: [
+              'your name;',
+              'your email address;',
+              'your business or company name, if you give one;',
+              'the kind of work you are asking about;',
+              'a budget range and a timeline, if you choose to give them;',
+              'your message about the project, written in the free-text field.',
+            ],
+          },
+          {
+            p: 'Company, budget, and timeline are optional and can be left blank. Nothing else is asked for.',
+          },
+        ],
+      },
+      {
+        id: 'arrives-with-submission',
+        heading: 'What arrives with a submission',
+        blocks: [
+          {
+            p: 'The enquiry endpoint uses the network address the request arrives from as a short-lived key for rate limiting, so one source cannot flood the form. That key lives in the memory of the server instance handling the request; it is not written to a database.',
+          },
+          {
+            p: 'The form also sends the time it was first displayed and a field that is hidden from people. Both help the site tell a typed enquiry from an automated one.',
+          },
+          {
+            p: 'These are used only to receive your enquiry and to limit abuse. They are not used to build a profile of you.',
+          },
+        ],
+      },
+      {
+        id: 'purpose',
+        heading: 'Why it is used',
+        blocks: [
+          { p: 'Information you send is used to:' },
+          {
+            list: [
+              'receive and read your enquiry;',
+              'reply to you;',
+              'discuss the work you have asked about;',
+              'protect the form against spam and abuse.',
+            ],
+          },
+          {
+            p: 'It is not used for marketing, newsletters, advertising, or profiling, and it is not sold.',
+          },
+        ],
+      },
+      {
+        id: 'service-providers',
+        heading: 'Who else handles it',
+        blocks: [
+          {
+            p: 'Vercel hosts this website and processes the requests made to it.',
+          },
+          {
+            p: 'When you submit the enquiry form successfully, Resend processes the submitted details to deliver them to Fluxion Studios’ designated mailbox.',
+          },
+          {
+            p: 'That mailbox is currently fluxion.workspace@gmail.com, so a copy will also exist in the email service behind it.',
+          },
+          {
+            p: 'Those providers process the information on Fluxion’s behalf so the site can run and the message can arrive. They handle data under their own terms; this page does not claim a retention period for them.',
+          },
+        ],
+      },
+      {
+        id: 'retention',
+        heading: 'How long it is kept',
+        blocks: [
+          {
+            p: 'Enquiry correspondence is kept only for as long as it is reasonably needed: to reply, to manage a possible engagement, to keep necessary business records, and to resolve disputes. There is no fixed deletion date.',
+          },
+          {
+            p: 'A deletion request is handled through the privacy address on this page. Deletion may not be possible where a record must be kept for legal, accounting, or dispute-resolution reasons, or where a copy already exists in email backups. Where that is the case, we will say so and explain what can be done instead.',
+          },
+        ],
+      },
+      {
+        id: 'cookies',
+        heading: 'Cookies and analytics',
+        blocks: [
+          {
+            p: 'This site does not intentionally set first-party cookies, run analytics, or load advertising or tracking scripts. There is no cookie banner because there is nothing to consent to.',
+          },
+          {
+            p: 'The infrastructure providers named above may process necessary technical information, such as the request itself, in order to serve the site and deliver email.',
+          },
+        ],
+      },
+      {
+        id: 'choices',
+        heading: 'Your choices',
+        blocks: [
+          {
+            p: 'You can email fluxion.workspace@gmail.com to ask what enquiry information Fluxion holds about you, to correct it, to ask for it to be deleted, or to ask a privacy question.',
+          },
+        ],
+      },
+      {
+        id: 'security',
+        heading: 'Security',
+        blocks: [
+          {
+            p: 'Fluxion uses reasonable technical and organisational safeguards for the information it handles. This site is served over HTTPS; the enquiry form is validated on the server as well as in the browser; the anti-abuse checks above are in place; and the email service key is held on the server and never sent to the browser. Enquiries are delivered to Fluxion Studios’ designated mailbox and are accessible to the people authorised to manage that mailbox.',
+          },
+          {
+            p: 'No method of sending or storing information is completely secure, and this page does not claim otherwise.',
+          },
+        ],
+      },
+      {
+        id: 'external-links',
+        heading: 'Links to other sites',
+        blocks: [
+          {
+            p: 'This site links out to other places, including LinkedIn, the founders’ profiles, and project work such as taamboolam.com. Those sites have their own privacy practices, and this policy does not cover them.',
+          },
+        ],
+      },
+      {
+        id: 'changes',
+        heading: 'Changes and contact',
+        blocks: [
+          {
+            p: 'If this policy changes, this page changes with it and the date at the top is updated. Privacy questions can be sent to fluxion.workspace@gmail.com.',
+          },
+        ],
+      },
+    ],
   },
 
   footer: {
@@ -310,6 +489,7 @@ export const site = {
         label: 'LinkedIn',
         href: 'https://www.linkedin.com/company/fluxion-studios/posts/?feedView=all',
       },
+      { label: 'Privacy', href: '/privacy' },
     ],
   },
 } as const

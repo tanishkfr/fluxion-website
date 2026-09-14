@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import type { CSSProperties, ReactNode } from 'react'
 
 import ContactForm from '@/components/ContactForm'
@@ -455,15 +456,23 @@ export default function Home() {
         <ul className="footer__links">
           {site.footer.links.map((link) => (
             <li key={link.href}>
-              <a
-                className="link"
-                href={link.href}
-                {...(link.href.startsWith('http')
-                  ? { target: '_blank', rel: 'noopener noreferrer' }
-                  : {})}
-              >
-                {link.label}
-              </a>
+              {/* Internal routes are client navigations; external and mail
+                  links stay plain anchors with the right safety attributes. */}
+              {link.href.startsWith('/') ? (
+                <Link className="link" href={link.href}>
+                  {link.label}
+                </Link>
+              ) : (
+                <a
+                  className="link"
+                  href={link.href}
+                  {...(link.href.startsWith('http')
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {})}
+                >
+                  {link.label}
+                </a>
+              )}
             </li>
           ))}
         </ul>

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 
 import { site } from '@/content/site'
@@ -355,6 +356,14 @@ export default function ContactForm() {
           </a>
         </p>
       </div>
+
+      {/* A description of what sending the form does, not a consent gate. */}
+      <p className="form__notice">
+        {copy.notice.text}{' '}
+        <Link className="link" href={copy.notice.href}>
+          {copy.notice.link}
+        </Link>
+      </p>
     </form>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 import { nav as chapters, site } from '@/content/site'
@@ -29,6 +30,9 @@ export default function Nav() {
   const panelRef = useRef<HTMLDivElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const barRef = useRef<HTMLElement>(null)
+
+  /** Empty on the homepage, so every anchor keeps pointing at itself. */
+  const home = usePathname() === '/' ? '' : '/'
 
   // The engine already tracks scroll every frame; a second scroll listener here
   // would do the same work twice.
@@ -91,10 +95,18 @@ export default function Nav() {
     }
   }, [open])
 
-  const links = chapters.map((item) => ({
-    ...item,
-    current: SCENE_FOR[item.href] === scene,
-  }))
+  const links = chapters.map((item) => {
+    const chapter = SCENE_FOR[item.href]
+    return {
+      ...item,
+      // The chapter anchors only exist on the homepage. On any other route the
+      // nav still has to work, so they point back at the homepage's anchors
+      // instead of scrolling nowhere. On the homepage nothing changes.
+      href: `${home}${item.href}`,
+      chapter,
+      current: chapter === scene,
+    }
+  })
 
   return (
     <header
@@ -103,7 +115,7 @@ export default function Nav() {
       data-stuck={stuck ? 'true' : 'false'}
       data-open={open ? 'true' : 'false'}
     >
-      <a className="nav__brand" href="#top">
+      <a className="nav__brand" href={`${home}#top`}>
         <span className="brandmark">
           <Image
             className="brandmark__img brandmark__img--dark"
@@ -128,7 +140,7 @@ export default function Nav() {
       <nav className="nav__links" aria-label="Page sections">
         {links.map((item) => (
           <a key={item.href} href={item.href} aria-current={item.current ? 'true' : undefined}>
-            <span className="nav__n" aria-hidden="true" data-chapter={SCENE_FOR[item.href]}>
+            <span className="nav__n" aria-hidden="true" data-chapter={item.chapter}>
               {item.mark}
             </span>
             {item.label}
@@ -137,7 +149,7 @@ export default function Nav() {
         ))}
       </nav>
 
-      <a className="btn btn--solid btn--sm nav__cta" href="#contact">
+      <a className="btn btn--solid btn--sm nav__cta" href={`${home}#contact`}>
         {site.hero.primary.label}
       </a>
 
@@ -165,7 +177,7 @@ export default function Nav() {
                 aria-current={item.current ? 'true' : undefined}
                 onClick={() => setOpen(false)}
               >
-                <span className="nav__n" aria-hidden="true" data-chapter={SCENE_FOR[item.href]}>
+                <span className="nav__n" aria-hidden="true" data-chapter={item.chapter}>
                   {item.mark}
                 </span>
                 {item.label}
